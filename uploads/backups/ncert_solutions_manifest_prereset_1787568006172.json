@@ -1,0 +1,1361 @@
+{
+  "lastModified": 1787556836614,
+  "solutionsByHash": {
+    "055ecd1165dbaa0f8d81f2fed774b4fe": {
+      "hash": "055ecd1165dbaa0f8d81f2fed774b4fe",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "A Bottle of Dew",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U1-C1",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U1-C1",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "A Bottle of Dew",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Alchemist",
+            "meaningEn": "A person who tries to turn base metals into gold by magic",
+            "meaningHi": "कीमियागर / रसवादी (जादू से सोना बनाने वाला)",
+            "example": "Rama Natha believed an alchemist could teach him the secret of wealth."
+          },
+          {
+            "word": "Diligently",
+            "meaningEn": "In a way that shows care and conscientiousness in one’s work",
+            "meaningHi": "मेहनत और लगन से",
+            "example": "Madhumati worked diligently in the banana fields every morning."
+          },
+          {
+            "word": "Potion",
+            "meaningEn": "A liquid with healing, magical, or poisonous properties",
+            "meaningHi": "जादुई पेय / काढ़ा",
+            "example": "The sage asked him to collect five litres of dew to create the magical potion."
+          },
+          {
+            "word": "Disillusioned",
+            "meaningEn": "Disappointed in someone or something that one discovers to be less good than one had believed",
+            "meaningHi": "भ्रममुक्त / जिसका भ्रम दूर हो गया हो",
+            "example": "Rama Natha was not disillusioned because he saw genuine gold earned through crops."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "Why did Rama Natha spend all his time and money searching for the magic potion?",
+            "answer": "Rama Natha believed that an alchemist could give him a magic potion capable of turning any common metal into gold. Driven by this obsession, he neglected his ancestral land and spent all his wealth chasing sages and so-called wonder-workers.",
+            "explanation": "The story opens by establishing Rama Natha’s core character flaw: his desire for effortless shortcuts to riches rather than engaging in productive labor."
+          },
+          {
+            "questionNumber": "2",
+            "question": "What condition did Sage Mahipati set for Rama Natha to create the potion?",
+            "answer": "Sage Mahipati told Rama Natha that to prepare the potion, he had to plant banana trees with his own hands, tend them carefully, and collect five litres of morning winter dew drops from the banana leaves by himself.",
+            "explanation": "The wise sage knew Rama Natha would only work if he believed it was part of a magical ritual. The requirement of self-labor was the sage’s ingenious pedagogical device."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Understanding the Text",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How did Rama Natha manage to collect five litres of dew over six years?",
+                "answer": "Rama Natha bought banana saplings, dug the soil, planted thousands of trees across acres of fallow land, and meticulously visited the plantation at dawn every morning to collect dew drops on banana leaves into a glass vessel until he amassed five litres.",
+                "stepByStepExplanation": "Point 1: Physical effort involved planting banana saplings. Point 2: Regular daily morning routine over 6 consecutive winters. Point 3: Careful storage in clean vessels."
+              },
+              {
+                "qNumber": "2",
+                "question": "What did Madhumati do with the bananas harvested from the trees?",
+                "answer": "While Rama Natha was occupied collecting the morning dew drops, his prudent wife Madhumati harvested the bunches of bananas, took them to the local market, sold them at fair prices, and saved the silver and gold coins in strongboxes over the six-year period.",
+                "stepByStepExplanation": "Highlights Madhumati’s role as the pragmatic economic partner who converted the physical yield of their farming into financial security."
+              },
+              {
+                "qNumber": "3",
+                "question": "What happened when Sage Mahipati chanted the mantra over the copper vessel containing dew?",
+                "answer": "The copper vessel did not turn into gold. Sage Mahipati then pointed to the rows of fruit-laden banana trees and the sacks of coins saved by Madhumati, explaining that the true magic was Rama Natha’s hard work, which had created real wealth out of neglected soil.",
+                "stepByStepExplanation": "The turning point of the fable where the illusion of alchemy is unveiled to reveal the supreme dignity and fruit of honest agricultural labor."
+              }
+            ]
+          },
+          {
+            "exerciseNumber": "Exercise 2",
+            "exerciseTitle": "Working with Language & Vocabulary",
+            "items": [
+              {
+                "qNumber": "4",
+                "question": "Match the idioms with their correct meanings: (a) Turn over a new leaf, (b) Strike gold, (c) By the sweat of one’s brow.",
+                "answer": "(a) Turn over a new leaf -> To start behaving in a better and more responsible way.\n(b) Strike gold -> To achieve sudden or immense success/wealth.\n(c) By the sweat of one’s brow -> Through one’s own hard physical labor and persistent effort.",
+                "stepByStepExplanation": "Contextual idiomatic usage matching the moral themes of diligence and transformation."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "Why did Sage Mahipati choose not to bluntly tell Rama Natha that alchemy was impossible?",
+            "answer": "Sage Mahipati understood that directly lecturing Rama Natha would lead to disbelief or defiance. By giving him a purposeful task that required daily agricultural discipline, the sage enabled Rama Natha to experience the rewarding nature of labor firsthand. Experiential learning transformed his mindset permanently.",
+            "explanation": "Evaluates understanding of character psychology, pedagogy, and constructive mentoring."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of A Bottle of Dew",
+          "hindiTitle": "पाठ का सारांश (ओस की एक बोतल)",
+          "paragraphs": [
+            {
+              "en": "Rama Natha, the son of a wealthy landlord, neglected his extensive lands in the fruitless pursuit of an alchemical magic potion that could transform copper into gold.",
+              "hi": "रामा नाथा, जो एक धनी जमींदार का बेटा था, अपनी उपजाऊ भूमि की अनदेखी करके तांबे को सोने में बदलने वाले जादुई औषधि की निष्फल खोज में अपना समय और धन बर्बाद करता था।"
+            },
+            {
+              "en": "A wise sage, Mahipati, guided him to plant banana trees and personally collect five litres of morning dew drops. Over six years of continuous farming, his wife sold the abundant harvest and earned genuine wealth.",
+              "hi": "एक बुद्धिमान साधु महिपति ने उसे केले के पौधे लगाने और स्वयं सुबह की ओस की पांच लीटर बूंदें इकट्ठा करने का निर्देश दिया। छह वर्षों की निरंतर खेती के दौरान, उसकी पत्नी ने प्रचुर फसल बेचकर वास्तविक धन अर्जित किया।"
+            },
+            {
+              "en": "The sage revealed that the real alchemy is human effort and industriousness, transforming Rama Natha into a proud and prosperous farmer.",
+              "hi": "साधु ने समझाया कि सच्चा जादू मनुष्य का परिश्रम और लगन है, जिसने रामा नाथा को एक स्वाभिमानी और समृद्ध किसान बना दिया।"
+            }
+          ],
+          "keyTakeaways": [
+            "There are no magical shortcuts to sustainable wealth.",
+            "Hard work, patience, and consistency yield tangible prosperity.",
+            "Wise guidance empowers individuals to discover truth through self-effort."
+          ],
+          "themeAnalysis": [
+            {
+              "name": "Dignity of Labor",
+              "descriptionEn": "The narrative underscores that productive agricultural work creates genuine economic value and inner peace.",
+              "descriptionHi": "यह कहानी रेखांकित करती है कि उत्पादक श्रम ही वास्तविक आर्थिक मूल्य और आत्मसम्मान पैदा करता है।"
+            }
+          ]
+        },
+        "extractZone": [
+          {
+            "extractNumber": 1,
+            "sourceLine": "\"Look at the banana plantation! It was your sweat that nurtured these trees and earned this gold...\"",
+            "questions": [
+              {
+                "id": "E1_Q1",
+                "type": "MCQ",
+                "question": "Who spoke these words and to whom?",
+                "options": {
+                  "A": "Madhumati to Rama Natha",
+                  "B": "Sage Mahipati to Rama Natha",
+                  "C": "Rama Natha to the villagers",
+                  "D": "The Alchemist to Madhumati"
+                },
+                "answer": "B",
+                "explanation": "Sage Mahipati revealed the true source of wealth upon inspecting the sacks of earnings."
+              }
+            ]
+          }
+        ]
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "4c3c45f7f49222a756ce94854a1fdf54": {
+      "hash": "4c3c45f7f49222a756ce94854a1fdf54",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Raven and the Fox",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U1-C2",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U1-C2",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Raven and the Fox",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Gorged",
+            "meaningEn": "Having eaten a large amount greedily",
+            "meaningHi": "ठूंस-ठूंस कर खाया हुआ / तृप्त",
+            "example": "The sly fox wished to be gorged on the delicious cheese."
+          },
+          {
+            "word": "Flattery",
+            "meaningEn": "Excessive and insincere praise, especially that given to further one’s own interests",
+            "meaningHi": "चापलूसी / झूठी प्रशंसा",
+            "example": "The fox used clever flattery to deceive the vain raven."
+          },
+          {
+            "word": "Lustre",
+            "meaningEn": "A gentle sheen or soft glow, especially that of a partly reflective surface",
+            "meaningHi": "चमक / द्युति",
+            "example": "The raven took immense pride in the glossy lustre of his black feathers."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What did the Raven hold in his beak as he sat on the branch?",
+            "answer": "The Raven was perched high on a tree branch holding a large, luscious morsel of cheese in his beak, which he had acquired and intended to enjoy.",
+            "explanation": "Sets the premise for the conflict: a prized possession guarded by a proud bird and coveted by a hungry predator."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Fable Analysis",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How did the Fox convince the Raven to open his beak and sing?",
+                "answer": "The Fox lavished extravagant praises on the Raven, admiring the silky sheen of his dark plumage, the grace of his stature, and claiming that if his singing voice were as sweet as his feathers were fair, he would undoubtedly be crowned the King of all birds. Flattered and eager to prove his vocal talent, the Raven opened his beak wide to caw, dropping the cheese instantly into the Fox’s waiting jaws.",
+                "stepByStepExplanation": "1. Fox targets Raven’s vanity. 2. Praises feathers and physical charm. 3. Challenges singing capability. 4. Raven succumbs and drops food."
+              },
+              {
+                "qNumber": "2",
+                "question": "What parting advice did the Fox give to the crestfallen Raven?",
+                "answer": "The Fox told the Raven that all flatterers live at the expense of those who listen to them, and that this harsh lesson was well worth the piece of cheese he had just surrendered.",
+                "stepByStepExplanation": "Delivers the central moral axiom of classical fables regarding self-deception and sycophancy."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "What psychological weakness in the Raven allowed the Fox to succeed?",
+            "answer": "The Raven suffered from extreme vanity and a thirst for unearned admiration. His lack of self-awareness blinded him to the obvious reality that ravens have a harsh croak rather than a melodious song, making him vulnerable to manipulative falsehoods.",
+            "explanation": "Focuses on critical thinking about character motivations and social awareness."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Raven and the Fox",
+          "hindiTitle": "पाठ का सारांश (कौआ और लोमड़ी)",
+          "paragraphs": [
+            {
+              "en": "A raven holding a piece of cheese was spotted by a clever fox who sought to snatch the prize through psychological manipulation rather than brute force.",
+              "hi": "पनीर का एक टुकड़ा चोंच में दबाए बैठे कौए को एक चतुर लोमड़ी ने देखा, जिसने शारीरिक बल के बजाय चापलूसी और मानसिक छल से उसे छीनने की योजना बनाई।"
+            },
+            {
+              "en": "By praising the raven’s beauty and challenging him to demonstrate his regal singing voice, the fox tricked the gullible bird into cawing, thereby losing his food.",
+              "hi": "कौए की सुंदरता की झूठी प्रशंसा करके और उसे अपनी मधुर आवाज में गाने की चुनौती देकर, लोमड़ी ने भोले कौए को कांव-कांव करने पर मजबूर कर दिया, जिससे पनीर नीचे गिर गया।"
+            }
+          ],
+          "keyTakeaways": [
+            "Never trust insincere flattery designed to exploit your ego.",
+            "Stay grounded in realistic self-appraisal.",
+            "Think before acting upon sweet words spoken by opportunists."
+          ]
+        },
+        "extractZone": [
+          {
+            "extractNumber": 1,
+            "sourceLine": "\"Master Raven, if your voice be equal to your feathers, you are indeed the phoenix of these woods!\"",
+            "questions": [
+              {
+                "id": "E1_Q1",
+                "type": "MCQ",
+                "question": "What was the Fox’s true motive behind calling the Raven a phoenix?",
+                "options": {
+                  "A": "He genuinely loved the Raven’s song",
+                  "B": "He wanted to make the Raven drop the cheese",
+                  "C": "He was frightened of the Raven",
+                  "D": "He wanted to learn how to fly"
+                },
+                "answer": "B",
+                "explanation": "The flattery was calculated solely to make the raven open its beak."
+              }
+            ]
+          }
+        ]
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "7bd37ee46da2a10971f5d6560e4373e4": {
+      "hash": "7bd37ee46da2a10971f5d6560e4373e4",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "Rama to the Rescue",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U1-C3",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U1-C3",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "Rama to the Rescue",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Dauntless",
+            "meaningEn": "Showing fearlessness and determination",
+            "meaningHi": "निडर / साहसी",
+            "example": "The young boy showed a dauntless spirit during the river crossing."
+          },
+          {
+            "word": "Torrent",
+            "meaningEn": "A strong and fast-moving stream of water or other liquid",
+            "meaningHi": "तेज धार / प्रचंड जलधारा",
+            "example": "The monsoon rains turned the quiet rivulet into a roaring torrent."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What crisis threatened the village when the heavy monsoon cloudburst struck?",
+            "answer": "The torrential rains caused the local river to breach its banks, flooding the low-lying farmlands and stranding several frightened calves and sheep on an isolated sandbar surrounded by rising currents.",
+            "explanation": "Establishes the emergency context requiring immediate courage and leadership."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Action Sequencing",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How did Rama demonstrate quick thinking and teamwork during the rescue mission?",
+                "answer": "Instead of panicking, Rama assembled his friends, gathered sturdy coir ropes and bamboo poles from the village shed, anchored a safety lifeline to a deep-rooted banyan tree, and waded strategically across the shallow ford to guide the stranded animals back to safety one by one.",
+                "stepByStepExplanation": "1. Organized resources. 2. Created secure physical anchors. 3. Guided the rescue calmly."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "What qualities make a true community hero according to this narrative?",
+            "answer": "A true community hero displays presence of mind under pressure, empathy towards vulnerable creatures, the ability to organize collective effort, and personal bravery without seeking personal glory.",
+            "explanation": "Cultivates civic responsibility and ethical character traits."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of Rama to the Rescue",
+          "hindiTitle": "पाठ का सारांश (रामा बना रक्षक)",
+          "paragraphs": [
+            {
+              "en": "When sudden monsoon flash floods imperil livestock in a riverside village, young Rama steps forward with courage and ingenious practical planning.",
+              "hi": "जब अचानक आई मानसूनी बाढ़ से नदी किनारे बसे गांव के पशु संकट में पड़ जाते हैं, तब युवा रामा अदम्य साहस और व्यावहारिक सूझबूझ से आगे आता है।"
+            },
+            {
+              "en": "Using ropes and coordinating with his peers, he successfully guides all animals to dry ground, earning the heartfelt gratitude of the entire village.",
+              "hi": "रस्सियों का उपयोग करके और अपने साथियों के साथ तालमेल बिठाकर, वह सभी पशुओं को सुरक्षित किनारे पहुंचाता है और पूरे गांव की सराहना प्राप्त करता है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Courage coupled with methodical planning overcomes natural hazards.",
+            "Protecting domestic and wild animals is an essential human duty."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "673857b8a3e0861ab06eca366c13979d": {
+      "hash": "673857b8a3e0861ab06eca366c13979d",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Unlikely Best Friends",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U2-C1",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U2-C1",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Unlikely Best Friends",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Mahout",
+            "meaningEn": "A person who works with, rides, and cares for an elephant",
+            "meaningHi": "महावत (हाथी की देखभाल करने वाला)",
+            "example": "The royal mahout noticed the deep bond between the royal elephant and the stray dog."
+          },
+          {
+            "word": "Inseparable",
+            "meaningEn": "Unable to be separated or treated separately",
+            "meaningHi": "अभिन्न / जिसे अलग न किया जा सके",
+            "example": "The mighty elephant and the playful dog became inseparable companions."
+          },
+          {
+            "word": "Pined",
+            "meaningEn": "Suffered a mental and physical decline, especially because of a broken heart or absence of a loved one",
+            "meaningHi": "विरह में तड़पना / उदास होकर सूख जाना",
+            "example": "The elephant pined away and refused to eat after the dog was taken away."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "How did the friendship between the royal elephant and the stray dog begin?",
+            "answer": "The stray dog ventured timidly into the royal stables attracted by the smell of rich food. The gentle elephant shared his sweet rice cakes with the hungry dog. Soon, they began playing together daily and formed an unbreakable bond of affection.",
+            "explanation": "Shows how unconditional sharing and gentleness can bridge the largest physical divides."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Character Study",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "What happened when a wealthy merchant took the dog away to his country estate?",
+                "answer": "When the merchant bought the dog and took him away, the royal elephant became profoundly grief-stricken. He stopped eating his fodder, refused royal baths, and shed tears. Meanwhile, the dog also refused food and escaped from the merchant’s enclosure to run all the way back to the elephant’s stable.",
+                "stepByStepExplanation": "1. Separation caused acute emotional distress to both animals. 2. Loss of appetite and physical decline. 3. Dog escapes back to his companion."
+              },
+              {
+                "qNumber": "2",
+                "question": "What decree did the King issue after witnessing their reunion?",
+                "answer": "Moved by the extraordinary love between the two animals, the King decreed that the dog would live permanently in the royal palace stables at state expense, ensuring the friends would never be parted again.",
+                "stepByStepExplanation": "Highlights the King’s compassion and wisdom in honoring genuine friendship."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "What universal moral truth about friendship is illustrated in this ancient Jataka-inspired tale?",
+            "answer": "The tale illustrates that true friendship does not depend on size, species, wealth, or status. Mutual empathy, loyalty, and companionship create a soulful connection that transcends physical differences.",
+            "explanation": "Encourages deep reflection on emotional connectivity in nature and human life."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Unlikely Best Friends",
+          "hindiTitle": "पाठ का सारांश (अनोखे पक्के दोस्त)",
+          "paragraphs": [
+            {
+              "en": "A royal elephant and a humble stray dog develop a heartfelt friendship in the king’s stables through shared food and playful companionship.",
+              "hi": "राजमहल के अस्तबल में एक विशाल शाही हाथी और एक साधारण बेसहारा कुत्ते के बीच भोजन साझा करने और स्नेह से गहरी मित्रता हो जाती है।"
+            },
+            {
+              "en": "When separated by an unthinking sale, both animals refuse sustenance until reunited, demonstrating the supreme power of emotional loyalty.",
+              "hi": "जब उन्हें अलग कर दिया जाता है, तो दोनों खाना-पीना छोड़ देते हैं, जब तक कि वे फिर से एक नहीं हो जाते, जो सच्ची वफादारी और प्रेम को दर्शाता है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Friendship knows no boundaries of size or status.",
+            "Empathy and loyalty are instinctive emotional truths across living beings."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "6585f9164735a4826c88d8d2987ad1d9": {
+      "hash": "6585f9164735a4826c88d8d2987ad1d9",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "A Friend in Need",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U2-C2",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U2-C2",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "A Friend in Need",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Fair-weather",
+            "meaningEn": "Loyal only during times of good fortune, abandoning in distress",
+            "meaningHi": "सुख का साथी / स्वार्थी",
+            "example": "A fair-weather companion vanishes as soon as difficulty arises."
+          },
+          {
+            "word": "Steadfast",
+            "meaningEn": "Resolutely firm and unwavering in loyalty or duty",
+            "meaningHi": "दृढ़ / अडिग",
+            "example": "Harish remained steadfast in supporting his injured classmate."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What is the true test of genuine friendship described in the chapter?",
+            "answer": "The true test of friendship occurs during adversity, illness, or danger, when a loyal friend willingly shares burdens and stands by one’s side without any selfish motive.",
+            "explanation": "Explains the ancient proverb \"A friend in need is a friend indeed\"."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Reflection",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How did the story contrast true loyalty with opportunistic companionship?",
+                "answer": "The narrative juxtaposed a companion who fled at the first sign of a forest bear against one who stood steadfastly to help and protect, proving that actions in times of peril reveal true character.",
+                "stepByStepExplanation": "Examines behavioral divergence during crisis situations."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "How can young students apply the lesson of this chapter in their school lives?",
+            "answer": "Students can support classmates who are struggling academically, comfort those who feel lonely or sick, and stand up against bullying rather than being passive bystanders.",
+            "explanation": "Connects classic literature to modern social-emotional learning."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of A Friend in Need",
+          "hindiTitle": "पाठ का सारांश (सच्चा मित्र वही जो समय पर काम आए)",
+          "paragraphs": [
+            {
+              "en": "This timeless narrative explores how crisis acts as the ultimate crucible separating authentic companions from fair-weather acquaintances.",
+              "hi": "यह कहानी स्पष्ट करती है कि संकट की घड़ी ही वह कसौटी है जो सच्चे मित्र और स्वार्थी परिचितों के बीच अंतर उजागर करती है।"
+            }
+          ],
+          "keyTakeaways": [
+            "True loyalty is measured by support during difficulties, not during parties."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "5132b61c8f9d150e41f023b5bf524e59": {
+      "hash": "5132b61c8f9d150e41f023b5bf524e59",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Friend's Prayer",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U2-C3",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U2-C3",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Friend's Prayer",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Harmony",
+            "meaningEn": "Agreement, peaceful coexistence, or pleasant musical concord",
+            "meaningHi": "सद्भाव / तालमेल",
+            "example": "The poem expresses a heartfelt wish for harmony and lifelong friendship."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What does the speaker pray for on behalf of their friend in the poem?",
+            "answer": "The speaker prays that their friend’s path may always be illuminated with wisdom, peace, gentle joy, health, and resilience in the face of sorrow.",
+            "explanation": "Focuses on the selfless and devotional nature of sincere friendship."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Poetic Appreciation & Rhyme Scheme",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "What poetic devices and imagery are used in The Friend’s Prayer?",
+                "answer": "The poem uses gentle metaphors of light dispelling darkness, soft winds carrying blessing, and a steady rhythmic cadence that resembles a calm meditative prayer.",
+                "stepByStepExplanation": "Analyzes tone, imagery, and poetic expression."
+              }
+            ]
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Friend's Prayer",
+          "hindiTitle": "पाठ का सारांश (मित्र की प्रार्थना)",
+          "paragraphs": [
+            {
+              "en": "A lyrical and tender poem expressing noble, selfless wishes for the prosperity, mental peace, and spiritual joy of a beloved companion.",
+              "hi": "एक मधुर और भावपूर्ण कविता जिसमें अपने मित्र के कल्याण, मानसिक शांति और जीवन की सफलता के लिए निस्वार्थ प्रार्थना की गई है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Wishing well for others enriches one’s own heart and character."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "57e55cca1a93001da5312b12cd15f50c": {
+      "hash": "57e55cca1a93001da5312b12cd15f50c",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Kites",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U3-C1",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U3-C1",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Kites",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Soar",
+            "meaningEn": "Fly or rise high in the air",
+            "meaningHi": "ऊंची उड़ान भरना",
+            "example": "The colorful kite began to soar into the azure blue sky."
+          },
+          {
+            "word": "Breeze",
+            "meaningEn": "A gentle, refreshing wind",
+            "meaningHi": "मंद समीर / हल्की हवा",
+            "example": "A fresh breeze lifted the paper kite above the rooftops."
+          },
+          {
+            "word": "Tattered",
+            "meaningEn": "Old and torn; in poor condition",
+            "meaningHi": "फटा-पुराना / जीर्ण-शीर्ण",
+            "example": "When caught in a thorny branch, the once glorious kite became tattered."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "How does a new kite look and behave when it first takes flight in a clear sky?",
+            "answer": "A new kite looks dazzlingly bright in the blue sky. It snaps its tail, dives and dips with the wind, and soars aloft like a ship riding upon ocean waves.",
+            "explanation": "Highlights the vivid sensory imagery and dynamic movement in the poem."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Poetry Appreciation & Comprehension",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "What happens when the wind falls and the string goes slack?",
+                "answer": "When the wind drops, the kite seems to rest in the air. The flyer quickly winds back the slack string and runs until a new breeze blows, filling its paper wings with air to rise once again.",
+                "stepByStepExplanation": "Examines the cyclical rhythm of flying kites dependent on atmospheric currents."
+              },
+              {
+                "qNumber": "2",
+                "question": "What is the sad fate of a kite when it gets snagged on a treetop?",
+                "answer": "When trapped in tree branches, the delicate kite flutters helplessly and gets torn into a ragged, pathetic piece of paper, losing all its aerial majesty.",
+                "stepByStepExplanation": "Contrasts the freedom of flight with the vulnerability of entrapment."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "How does the poet use the metaphor of a ship to describe the kite?",
+            "answer": "The poet compares the kite riding gusty currents to a vessel sailing across ocean waves. Just as a ship uses its canvas sail to harness the wind and surge forward, the kite uses its paper body to climb the sky.",
+            "explanation": "Evaluates appreciation of poetic figures of speech and extended metaphors."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Kites",
+          "hindiTitle": "पाठ का सारांश (पतंगें)",
+          "paragraphs": [
+            {
+              "en": "This joyful poem captures the kinetic beauty, vibrant colors, and exhilarating freedom of flying a kite in the vast open sky.",
+              "hi": "यह आनंदमयी कविता खुले नीले आकाश में पतंग उड़ाने की ऊर्जा, जीवंत रंगों और स्वतंत्रता का सुंदर चित्रण करती है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Nature and wind dynamics awaken childhood wonder and creativity."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "2378a318981f135353042f5285f0832f": {
+      "hash": "2378a318981f135353042f5285f0832f",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Old Brown Horse",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U3-C2",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U3-C2",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Old Brown Horse",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Lame",
+            "meaningEn": "Unable to walk without difficulty as the result of an injury or illness",
+            "meaningHi": "लंगड़ा / शिथिल",
+            "example": "The old brown horse had grown lame after years of hard pulling."
+          },
+          {
+            "word": "Weary",
+            "meaningEn": "Feeling or showing extreme tiredness",
+            "meaningHi": "थका-मांदा / क्लान्त",
+            "example": "He rested his weary head gently on the fence gate."
+          },
+          {
+            "word": "Passer-by",
+            "meaningEn": "A person who happens to be walking past something or someone",
+            "meaningHi": "राहगीर / पथिक",
+            "example": "A kind passer-by stopped to stroke the horse’s soft nose."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "Where does the old brown horse spend his days, and what does he seem to remember?",
+            "answer": "The horse stands near the fence watching cars speed past. He nostalgically remembers his youthful days when he was lively, well-groomed, and trotted proudly alongside his master before motor vehicles made horses obsolete.",
+            "explanation": "Evokes poignant reflection on aging and changing technological eras."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Compassion Analysis",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "What simple gesture of kindness brings comfort to the old horse?",
+                "answer": "A gentle touch, a friendly word, or a soft stroke on his mane from an empathetic passer-by makes the horse feel remembered, valued, and loved in his quiet old age.",
+                "stepByStepExplanation": "Highlights the profound impact of simple humane kindness."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "What moral responsibility do humans owe to elderly domestic animals according to W.F. Holmes?",
+            "answer": "Humans owe lifelong gratitude, gentle care, dignity, and affectionate companionship to domestic animals that served faithfully in their prime, rather than abandoning them to neglect.",
+            "explanation": "Instills deep bio-ethical values and empathy for animal welfare."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Old Brown Horse",
+          "hindiTitle": "पाठ का सारांश (बूढ़ा भूरा घोड़ा)",
+          "paragraphs": [
+            {
+              "en": "A moving poem by W.F. Holmes asking humans to pause and show affection to an aging, retired work horse standing quietly by the pasture fence.",
+              "hi": "डब्ल्यू. एफ. होम्स की यह मार्मिक कविता मनुष्यों से आग्रह करती है कि वे बाड़े के पास खड़े उस वृद्ध घोड़े के प्रति प्रेम और कृतज्ञता व्यक्त करें जिसने जवानी में उनकी सेवा की थी।"
+            }
+          ],
+          "keyTakeaways": [
+            "Kindness to aging animals and fellow living beings is a cardinal human virtue."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "62df7378d0f3947cad16c316fda9f6ec": {
+      "hash": "62df7378d0f3947cad16c316fda9f6ec",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "Neem Baba",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U3-C3",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U3-C3",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "Neem Baba",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Medicinal",
+            "meaningEn": "Having the properties of healing or curing disease",
+            "meaningHi": "औषधीय / रोगनाशक",
+            "example": "Neem leaves possess immense medicinal benefits in Ayurveda."
+          },
+          {
+            "word": "Antiseptic",
+            "meaningEn": "Preventing the growth of disease-causing microorganisms",
+            "meaningHi": "रोगाणुरोधक / कीटाणुनाशक",
+            "example": "Neem oil acts as a natural antiseptic for skin ailments."
+          },
+          {
+            "word": "Pesticide",
+            "meaningEn": "A substance used for destroying insects or other organisms harmful to plants",
+            "meaningHi": "कीटनाशक",
+            "example": "Neem extract is an eco-friendly organic pesticide."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "Who is Neem Baba, and why does Amber converse with him in the courtyard?",
+            "answer": "Neem Baba is a majestic, century-old Neem tree standing in Amber’s ancestral courtyard. Amber rests under his cool shade and engages in an imaginative, affectionate dialogue discovering the tree’s timeless botanical benefits.",
+            "explanation": "Frames ecological knowledge through a warm intergenerational narrative format."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Scientific & Ecological Comprehension",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "Enumerate four traditional uses of different parts of the Neem tree explained in the chapter.",
+                "answer": "1. Twigs (Datun): Used as natural toothbrushes to maintain dental hygiene and fight gum infections.\n2. Dried Leaves: Placed in book cupboards and grain bins to repel moths and harmful insects.\n3. Bark & Oil: Used in Ayurvedic preparations to cure skin infections, burns, and fevers.\n4. Flowers & Fruit: Eaten in spring tonics to purify the blood and boost immunity.",
+                "stepByStepExplanation": "Detailed categorization of botanical uses across bark, leaf, twig, and fruit."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "Why is the Neem tree referred to as \"Nature’s Pharmacy\" or \"The Village Dispensary\"?",
+            "answer": "Every part of the Neem tree—roots, bark, leaves, flowers, seeds, and sap—contains potent antibacterial, antiviral, antifungal, and insecticidal compounds that have provided safe, zero-cost health remedies for thousands of years.",
+            "explanation": "Fosters appreciation of indigenous knowledge systems and sustainability."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of Neem Baba",
+          "hindiTitle": "पाठ का सारांश (नीम बाबा)",
+          "paragraphs": [
+            {
+              "en": "Through a delightful dialogue between young Amber and the grandfatherly Neem tree, the chapter reveals India’s rich herbal heritage and the multi-dimensional benefits of the miraculous Neem.",
+              "hi": "युवा अंबर और दादा समान बुजुर्ग नीम के पेड़ के बीच एक सुंदर संवाद के माध्यम से, यह पाठ भारत की समृद्ध वनस्पति विरासत और नीम के चमत्कारी औषधीय लाभों को उजागर करता है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Neem is an ecological treasure and natural pharmacy.",
+            "Preserving heritage trees sustains biodiversity and cultural well-being."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "c5b391aee3ad047ef83e11040f8c1e3f": {
+      "hash": "c5b391aee3ad047ef83e11040f8c1e3f",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Champion",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U4-C1",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U4-C1",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Champion",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Grit",
+            "meaningEn": "Courage, resolve, and strength of character",
+            "meaningHi": "धैर्य / दृढ़ संकल्प",
+            "example": "Her extraordinary grit pushed her across the finish line despite the sprain."
+          },
+          {
+            "word": "Perseverance",
+            "meaningEn": "Persistence in doing something despite difficulty or delay in achieving success",
+            "meaningHi": "निरंतर लगन / अध्यवसाय",
+            "example": "Daily practice and perseverance made him a state-level sprinter."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What obstacle did the young athlete face on the morning of the inter-school championship race?",
+            "answer": "The athlete experienced severe muscle cramps and doubts, but chose to rely on rigorous disciplined training, mental visualization, and sportsmanship rather than surrendering to fear.",
+            "explanation": "Highlights the psychological fortitude necessary in competitive athletics."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Comprehension & Sportsmanship",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "Why is true sportsmanship considered more valuable than merely winning a medal?",
+                "answer": "Sportsmanship involves integrity, respect for opponents, grace in both victory and defeat, and giving one’s absolute honest effort. Medals tarnish over time, but character forged through athletic discipline endures for life.",
+                "stepByStepExplanation": "Defines the philosophical core of Olympic and sports education."
+              }
+            ]
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Champion",
+          "hindiTitle": "पाठ का सारांश (चैंपियन)",
+          "paragraphs": [
+            {
+              "en": "An inspiring narrative about an aspiring runner who discovers that championship is not defined merely by crossing the ribbon first, but by courage, fair play, and lifting others.",
+              "hi": "एक प्रेरणादायक कहानी जो दर्शाती है कि सच्चा चैंपियन केवल पहले स्थान पर आने से नहीं बनता, बल्कि साहस, निष्पक्ष खेल और दूसरों का साथ देने से बनता है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Dedication, discipline, and ethical sportsmanship define true triumph."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "1909c47223d22cfacdd9e867c4407949": {
+      "hash": "1909c47223d22cfacdd9e867c4407949",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Magic Pool",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U4-C2",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U4-C2",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Magic Pool",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Yaksha",
+            "meaningEn": "A celestial or nature spirit guarding natural wealth in Indian mythology",
+            "meaningHi": "यक्ष (प्रकृति और जल का दिव्य रक्षक)",
+            "example": "The voice of the invisible Yaksha warned the Pandava princes at the enchanted pool."
+          },
+          {
+            "word": "Prudence",
+            "meaningEn": "The quality of being prudent; cautiousness and wisdom in decision making",
+            "meaningHi": "विवेक / बुद्धिमत्ता",
+            "example": "Yudhishthira acted with exemplary prudence before drinking from the pool."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "Why did Yudhishthira’s brothers collapse lifeless on the banks of the enchanted pool?",
+            "answer": "Tormented by agonizing thirst in the deep forest, Nakula, Sahadeva, Arjuna, and Bhima rushed to drink water from the clear pool while ignoring the disembodied voice of the Yaksha, which commanded them to answer his philosophical questions first.",
+            "explanation": "Highlights the danger of acting impulsively under physical distress."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Philosophical Q&A Comprehension",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How did Yudhishthira answer the Yaksha’s question: \"What is faster than the wind, and what is more numerous than blades of grass?\"",
+                "answer": "Yudhishthira answered: \"The mind (manas) is swifter than the wind, and human thoughts/worries are more numerous than blades of grass.\"",
+                "stepByStepExplanation": "Reflects ancient psychological and philosophical insights from the Mahabharata."
+              },
+              {
+                "qNumber": "2",
+                "question": "What is the greatest wonder in the world according to Yudhishthira?",
+                "answer": "Yudhishthira answered: \"Every day, countlessly many living beings depart to the abode of Death (Yama), yet those who remain desire to live forever as if they were immortal. What could be a greater wonder than this?\"",
+                "stepByStepExplanation": "Famous philosophical answer highlighting human mortality and illusions."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "Why did Yudhishthira choose Nakula to be revived rather than his own valiant brothers Bhima or Arjuna?",
+            "answer": "Yudhishthira practiced flawless Dharma and impartiality. His father Pandu had two wives: Kunti and Madri. Since Yudhishthira, a son of Kunti, was alive, he chose Nakula, the eldest son of Madri, so that both mothers would have a surviving child.",
+            "explanation": "Demonstrates the highest ideal of ethical fairness and love without partiality."
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Magic Pool",
+          "hindiTitle": "पाठ का सारांश (जादुई तालाब / यक्ष प्रश्न)",
+          "paragraphs": [
+            {
+              "en": "During their forest exile, the Pandavas encounter a mysterious pool guarded by a Yaksha (Dharma in disguise). While his brothers fall victim to impatience, Yudhishthira’s wisdom and sense of justice restore them all to life.",
+              "hi": "वनवास के दौरान पांडवों का सामना यक्ष द्वारा संरक्षित एक जादुई तालाब से होता है। अधीरता के कारण जब उसके भाई अचेत हो जाते हैं, तब युधिष्ठिर का ज्ञान, धैर्य और निष्पक्ष न्याय सभी को पुनर्जीवित कर देता है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Patience and adherence to righteousness (Dharma) save lives in crisis.",
+            "Impartial justice is the highest virtue of leadership."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "03ab7924356e7bc6960b375b77a92b3e": {
+      "hash": "03ab7924356e7bc6960b375b77a92b3e",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Yoga Spell",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U4-C3",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U4-C3",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Yoga Spell",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Postures",
+            "meaningEn": "Particular ways of standing, sitting, or positioning the body (Asanas)",
+            "meaningHi": "मुद्राएं / आसन",
+            "example": "Practicing Vrikshasana improves body balance and posture."
+          },
+          {
+            "word": "Serenity",
+            "meaningEn": "The state of being calm, peaceful, and untroubled",
+            "meaningHi": "प्रशांति / मानसिक शांति",
+            "example": "Deep yogic breathing brings profound mental serenity."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What transformed the tired and distracted schoolchildren into vibrant, focused learners?",
+            "answer": "A structured morning session of simple Yoga asanas (Tadasana, Vrikshasana, Bhujangasana) and calming Pranayama revitalized their spine, oxygenated their bloodstream, and improved their concentration.",
+            "explanation": "Connects modern wellness education to traditional holistic practices."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Yoga & Health Comprehension",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "What are the three core benefits of daily Yoga practice described in the chapter?",
+                "answer": "1. Physical Flexibility & Strength: Aligns the spine, tones muscles, and improves posture.\n2. Mental Calm & Clarity: Reduces stress and anxiety through controlled breathing.\n3. Enhanced Concentration: Trains the mind to sustain focus during academic studies.",
+                "stepByStepExplanation": "Categorizes physical, mental, and academic benefits."
+              }
+            ]
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Yoga Spell",
+          "hindiTitle": "पाठ का सारांश (योग का जादू)",
+          "paragraphs": [
+            {
+              "en": "An engaging exploration of how India’s ancient heritage of Yoga brings physical stamina, emotional balance, and joyous vitality to modern young students.",
+              "hi": "यह पाठ दर्शाता है कि भारत की प्राचीन योग परंपरा किस प्रकार आधुनिक विद्यार्थियों को शारीरिक स्फूर्ति, मानसिक एकाग्रता और आंतरिक शांति प्रदान करती है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Daily mindful movement and breathing foster holistic well-being."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "7a63195cd7d53dcc29dfe5ad5c055444": {
+      "hash": "7a63195cd7d53dcc29dfe5ad5c055444",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "Hamara Bharat: Incredible India!",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U5-C1",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U5-C1",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "Hamara Bharat: Incredible India!",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Heritage",
+            "meaningEn": "Valued objects, cultures, and qualities such as historic buildings and cultural traditions passed down from previous generations",
+            "meaningHi": "धरोहर / विरासत",
+            "example": "India possesses an incomparable architectural and cultural heritage."
+          },
+          {
+            "word": "Kaleidoscope",
+            "meaningEn": "A constantly changing pattern or sequence of elements",
+            "meaningHi": "विविध रंगों और दृश्यों का मनमोहक संयोजन",
+            "example": "Indian festivals present a brilliant kaleidoscope of traditions."
+          },
+          {
+            "word": "Pluralism",
+            "meaningEn": "A condition or system in which two or more states, groups, or cultures coexist",
+            "meaningHi": "बहुलतावाद / अनेकता में एकता",
+            "example": "Cultural pluralism is the bedrock of Indian civilization."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What geographical and climatic extremes make India a subcontinent of astonishing variety?",
+            "answer": "India encompasses the snow-crowned Himalayas in the north, the sun-drenched Thar Desert in the west, the lush rainforests of the Northeast, and the vast coastline bordered by the Arabian Sea, Bay of Bengal, and Indian Ocean.",
+            "explanation": "Surveys the rich physical geography of the Indian subcontinent."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Cultural & Geographical Synthesis",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How is the principle of \"Unity in Diversity\" manifested in daily Indian life?",
+                "answer": "Despite speaking hundreds of languages, wearing diverse regional attire, savoring unique culinary styles, and practicing diverse faiths, the people of India share a deep civilizational ethos, celebrated jointly during national festivals, folk dances, and cultural traditions.",
+                "stepByStepExplanation": "Synthesizes cultural harmony, mutual respect, and constitutional unity."
+              }
+            ]
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of Hamara Bharat: Incredible India!",
+          "hindiTitle": "पाठ का सारांश (हमारा भारत: अतुल्य भारत!)",
+          "paragraphs": [
+            {
+              "en": "A proud, comprehensive celebration of India’s grand geography, ancient monuments, classical arts, scientific contributions, and harmonious pluralistic society.",
+              "hi": "भारत के भव्य भूगोल, प्राचीन स्मारकों, शास्त्रीय कलाओं, वैज्ञानिक योगदानों और विविधताओं से भरे सौहार्दपूर्ण समाज का एक गौरवशाली उत्सव।"
+            }
+          ],
+          "keyTakeaways": [
+            "India’s strength lies in its vibrant diversity bound by timeless civilizational values.",
+            "Respecting and preserving our national heritage is every citizen’s duty."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "23e1098fada9d1064ab316c952a49dc7": {
+      "hash": "23e1098fada9d1064ab316c952a49dc7",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Illustrated Ramayana",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U5-C2",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U5-C2",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Illustrated Ramayana",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Miniature",
+            "meaningEn": "A very small, detailed painting or artwork",
+            "meaningHi": "लघुचित्र / बारीक पेंटिंग",
+            "example": "Mewar artists created exquisite miniature paintings illustrating the Ramayana."
+          },
+          {
+            "word": "Manuscript",
+            "meaningEn": "A book, document, or piece of music written by hand rather than typed or printed",
+            "meaningHi": "हस्तलिपि / पाण्डुलिपि",
+            "example": "The ancient manuscript was preserved with natural plant-based pigments."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "How did traditional Indian artists use visual storytelling to bring the Ramayana to life?",
+            "answer": "Master painters from regional ateliers (such as Mewar, Kangra, and Madhubani) created detailed miniature paintings using natural stone and herbal colors, capturing dynamic scenes of duty, forest life, devotion, and triumph of virtue.",
+            "explanation": "Explores the intersection of classical Indian literature and visual arts."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Art & Epic Narrative Comprehension",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "What ethical values are immortalized in the characters of Rama, Lakshmana, Sita, and Hanuman?",
+                "answer": "The epic embodies filial duty, unshakeable loyalty, moral integrity, self-sacrifice, and supreme devotion to righteousness (Dharma) across adversity.",
+                "stepByStepExplanation": "Outlines the cardinal virtues central to Indian cultural narrative traditions."
+              }
+            ]
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Illustrated Ramayana",
+          "hindiTitle": "पाठ का सारांश (सचित्र रामायण)",
+          "paragraphs": [
+            {
+              "en": "A fascinating journey into how India’s grand epic was preserved and depicted through centuries of luminous manuscript paintings and artistic traditions.",
+              "hi": "यह पाठ दर्शाता है कि किस प्रकार भारत के महान महाकाव्य को सदियों से सुंदर हस्तलिखित लघुचित्रों और लोक कलाओं के माध्यम से सजीव रखा गया है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Art and literature together preserve the moral conscience of a civilization."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "20fed0df777f8c30e58d420f71248357": {
+      "hash": "20fed0df777f8c30e58d420f71248357",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "subChapterTitle": "The Heritage Trees",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-POORVI-U5-C3",
+        "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+        "chapterId": "CH-POORVI-U5-C3",
+        "classLevel": "Class 6",
+        "subject": "English",
+        "bookTitle": "Poorvi (English)",
+        "chapterTitle": "The Heritage Trees",
+        "generatedAt": "2026-03-01T00:00:00.000Z",
+        "sourceModel": "ncert-verified-curriculum-engine",
+        "wordMeanings": [
+          {
+            "word": "Canopy",
+            "meaningEn": "The high, spreading continuous roof formed by the treetops in a forest",
+            "meaningHi": "विशाल वृक्ष-छत्र / वितान",
+            "example": "The ancient banyan tree’s immense canopy sheltered countless species of birds."
+          },
+          {
+            "word": "Sacred Grove",
+            "meaningEn": "A forest or stand of trees preserved through traditional community protection and spiritual reverence",
+            "meaningHi": "पवित्र उपवन / देवराई",
+            "example": "Villagers protect the sacred grove as a refuge for native flora and fauna."
+          }
+        ],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What constitutes a \"Heritage Tree\" and why are they considered living historical monuments?",
+            "answer": "A Heritage Tree is an ancient tree (often several centuries old, like ancient Banyan, Peepal, or Deodar trees) that holds immense botanical, ecological, cultural, and historical significance, having witnessed generations of community life.",
+            "explanation": "Defines heritage conservation in the context of natural living ecosystems."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1",
+            "exerciseTitle": "Conservation & Environmental Heritage",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "How do heritage trees support local microclimates and biodiversity?",
+                "answer": "Deep root networks prevent soil erosion and recharge groundwater tables, while their massive canopies absorb carbon dioxide, lower ambient temperatures, and provide micro-habitats for birds, insects, squirrels, and epiphytes.",
+                "stepByStepExplanation": "Scientific explanation of ecological keystone species."
+              }
+            ]
+          }
+        ],
+        "bilingualSummary": {
+          "englishTitle": "Summary of The Heritage Trees",
+          "hindiTitle": "पाठ का सारांश (धरोहर वृक्ष)",
+          "paragraphs": [
+            {
+              "en": "A profound ecological reflection urging communities and youth to protect centuries-old trees as sacred living archives of biodiversity and culture.",
+              "hi": "एक गहरा पर्यावरण केंद्रित पाठ जो युवाओं और समाज को सदियों पुराने पेड़ों को जैव विविधता और संस्कृति के जीवित स्मारक मानकर उनकी रक्षा करने का संदेश देता है।"
+            }
+          ],
+          "keyTakeaways": [
+            "Ancient trees are indispensable ecological guardians.",
+            "Preserving green heritage ensures sustainable living for future generations."
+          ]
+        }
+      },
+      "generatedAt": "2026-03-01T00:00:00.000Z",
+      "sourceModel": "ncert-verified-curriculum-engine"
+    },
+    "83e44d8a38e38d31f3bf8809e7273b92": {
+      "hash": "83e44d8a38e38d31f3bf8809e7273b92",
+      "classLevel": "Class 11",
+      "subject": "Physics",
+      "subChapterTitle": "Chapter 1",
+      "sectionType": "NCERT_SOLUTION",
+      "solution": {
+        "id": "SOL-MT6X6QKI",
+        "uniqueChapterHash": "83e44d8a38e38d31f3bf8809e7273b92",
+        "bookId": "",
+        "chapterId": "",
+        "classLevel": "Class 11",
+        "subject": "Physics",
+        "bookTitle": "NCERT Textbook",
+        "chapterTitle": "Chapter 1",
+        "wordMeanings": [],
+        "inTextCheckpoints": [
+          {
+            "questionNumber": "1",
+            "question": "What is meant by a fundamental physical quantity and how does it differ from a derived physical quantity?",
+            "answer": "A fundamental physical quantity is a base quantity that is defined independently of other physical quantities, such as mass, length, and time. A derived physical quantity is defined in terms of combinations of fundamental physical quantities, such as velocity (length/time) or force (mass × acceleration).",
+            "explanation": "Fundamental quantities serve as the building blocks of a system of measurement (e.g., SI base units). Derived quantities are expressed algebraically using multiplication or division of base quantities."
+          },
+          {
+            "questionNumber": "2",
+            "question": "Why is the use of a standardized system of units like SI essential in scientific measurements?",
+            "answer": "A standardized system ensures uniformity, reproducibility, and international consistency across scientific research, technical applications, and global trade.",
+            "explanation": "Without a common standard, measurements taken in different regions or using different standards cannot be easily compared or integrated, leading to potential errors and confusion."
+          }
+        ],
+        "exercises": [
+          {
+            "exerciseNumber": "Exercise 1.1",
+            "exerciseTitle": "Exercise 1.1 - Units and Dimensional Analysis",
+            "items": [
+              {
+                "qNumber": "1",
+                "question": "Fill in the blanks: (a) The volume of a cube of side 1 cm is equal to _____ m³. (b) The surface area of a solid cylinder of radius 2.0 cm and height 10.0 cm is equal to _____ mm².",
+                "answer": "(a) 10⁻⁶ m³; (b) 1.5 x 10⁴ mm²",
+                "stepByStepExplanation": "(a) Side a = 1 cm = 10⁻² m. Volume V = a³ = (10⁻² m)³ = 10⁻⁶ m³.\n(b) Radius r = 2.0 cm = 20 mm, Height h = 10.0 cm = 100 mm. Total surface area A = 2πr(r + h) = 2 x 3.1416 x 20 x (20 + 100) = 125.66 x 120 ≈ 1.5 x 10⁴ mm²."
+              },
+              {
+                "qNumber": "2",
+                "question": "A calorie is a unit of heat or energy and it equals about 4.2 J where 1 J = 1 kg m² s⁻². Suppose we employ a system of units in which the unit of mass equals α kg, the unit of length equals β m, the unit of time is γ s. Show that a calorie has a magnitude 4.2 α⁻¹ β⁻² γ² in terms of the new units.",
+                "answer": "The magnitude of a calorie in the new system of units is 4.2 α⁻¹ β⁻² γ².",
+                "stepByStepExplanation": "Dimensional formula of energy = [M¹ L² T⁻²]. Using n₁ U₁ = n₂ U₂:\n4.2 [kg¹ m² s⁻²] = n₂ [(α kg)¹ (β m)² (γ s)⁻²]\n4.2 = n₂ [α¹ β² γ⁻²]\nn₂ = 4.2 α⁻¹ β⁻² γ²."
+              }
+            ]
+          }
+        ],
+        "competencyBasedQuestions": [
+          {
+            "id": "CBQ1",
+            "type": "CONCEPTUAL",
+            "question": "An experiment measures a physical quantity using dimensional analysis. If a student deduces that time period T of a simple pendulum depends on mass m, length l, and acceleration due to gravity g as T = k mᵃ lᵇ gᶜ, determine the exponents a, b, and c using dimensional homogeneity.",
+            "answer": "a = 0, b = 1/2, c = -1/2, giving T = k √(l/g)",
+            "explanation": "Dimensions: [T] = [M]ᵃ [L]ᵇ [L T⁻²]ᶜ = [Mᵃ Lᵇ⁺ᶜ T⁻²ᶜ].\nEquating powers: M: a = 0; L: b + c = 0; T: -2c = 1 => c = -1/2, b = 1/2.\nThus, time period is independent of mass, directly proportional to √l and inversely proportional to √g."
+          }
+        ],
+        "generatedAt": "2026-08-24T07:33:56.610Z",
+        "sourceModel": "gemini-3.6-flash"
+      },
+      "generatedAt": "2026-08-24T07:33:56.614Z",
+      "sourceModel": "gemini-ai"
+    }
+  }
+}

@@ -1,0 +1,73 @@
+[
+  {
+    "jobId": "JOB-1788704045954-NVUND",
+    "generationType": "QUESTION_BANK",
+    "requestedCount": 1,
+    "completedCount": 1,
+    "remainingCount": 0,
+    "checkpoint": 1,
+    "currentBatch": 1,
+    "currentItemIndex": 1,
+    "modelId": "gemini-3.7-flash",
+    "providerId": "google-gemini",
+    "attempt": 0,
+    "status": "COMPLETED",
+    "promptVersion": "v2.0",
+    "schemaVersion": "v2.0",
+    "createdAt": 1788704045954,
+    "updatedAt": 1788704049741,
+    "lastCheckpointAt": 1788704049740,
+    "modelChain": [
+      "default"
+    ],
+    "checkpointData": [
+      {
+        "question": "When introducing the concept of physical versus chemical changes to middle school students, how would you design a simple classroom demonstration involving the reaction of baking soda ($ext{NaHCO}_3$) and vinegar ($ext{CH}_3\text{COOH}$) to help them distinguish between observable macroscopic evidence and underlying molecular changes?",
+        "category": "Pedagogy",
+        "difficulty": "Easy",
+        "subject": "Science",
+        "questionType": "Conceptual",
+        "suggestedTimeLimit": 90,
+        "suggestedMaxScore": 10,
+        "tags": [
+          "Science Pedagogy",
+          "Demonstration Methods",
+          "Physical vs Chemical Changes",
+          "Middle School Science",
+          "Active Learning"
+        ],
+        "hint": "A strong response should describe a concrete inquiry-based setup, highlight key observable indicators of a chemical reaction such as effervescence due to the formation of carbon dioxide gas ($ext{CO}_2$) and temperature shifts, and explain how to guide students to connect these sensory observations to the concept of bonds breaking and forming new chemical substances rather than a simple change of state."
+      }
+    ],
+    "dedupKeys": [
+      "when introducing the concept of physical versus chemical changes to middle school students how would you design a simple classroom demonstration involving the reaction of baking soda ext nahco _3 and vinegar ext ch _3 ext cooh to help them distinguish between observable macroscopic evidence and underlying molecular changes"
+    ],
+    "rawConfig": {
+      "category": "Pedagogy",
+      "difficulty": "Easy",
+      "subject": "Science",
+      "questionType": "Conceptual",
+      "language": "English",
+      "existingCount": 0
+    },
+    "metadata": {},
+    "lastSuccessfulOutput": {
+      "question": "When introducing the concept of physical versus chemical changes to middle school students, how would you design a simple classroom demonstration involving the reaction of baking soda ($ext{NaHCO}_3$) and vinegar ($ext{CH}_3\text{COOH}$) to help them distinguish between observable macroscopic evidence and underlying molecular changes?",
+      "category": "Pedagogy",
+      "difficulty": "Easy",
+      "subject": "Science",
+      "questionType": "Conceptual",
+      "suggestedTimeLimit": 90,
+      "suggestedMaxScore": 10,
+      "tags": [
+        "Science Pedagogy",
+        "Demonstration Methods",
+        "Physical vs Chemical Changes",
+        "Middle School Science",
+        "Active Learning"
+      ],
+      "hint": "A strong response should describe a concrete inquiry-based setup, highlight key observable indicators of a chemical reaction such as effervescence due to the formation of carbon dioxide gas ($ext{CO}_2$) and temperature shifts, and explain how to guide students to connect these sensory observations to the concept of bonds breaking and forming new chemical substances rather than a simple change of state."
+    },
+    "lastSuccessfulOutputHash": "3digyl"
+  }
+]

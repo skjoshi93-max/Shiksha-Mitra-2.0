@@ -1,0 +1,114 @@
+{
+  "currentDate": "2026-09-06",
+  "lastResetAt": 1788704049732,
+  "models": {
+    "gemini-3.7-flash": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 1000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 1000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-flash-latest": {
+      "dailyTokenUsage": 759,
+      "dailyTokenLimit": 1000000,
+      "dailyApiUsage": 1,
+      "dailyApiLimit": 1000,
+      "lastUsedTimestamp": 1788704049732,
+      "totalHistoricalTokens": 759,
+      "totalHistoricalRequests": 1
+    },
+    "gemini-3.1-flash-lite": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 2000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 2000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-flash-lite-latest": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 2000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 2000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3.5-flash": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 1000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 1000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3.5-flash-lite": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 2000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 2000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3.6-flash": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 1000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 1000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3-flash-preview": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 1000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 1000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3.1-flash-lite-preview": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 2000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 2000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-pro-latest": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 500000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 500,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3.1-pro-preview": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 500000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 500,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    },
+    "gemini-3.8-flash": {
+      "dailyTokenUsage": 0,
+      "dailyTokenLimit": 1000000,
+      "dailyApiUsage": 0,
+      "dailyApiLimit": 1000,
+      "lastUsedTimestamp": null,
+      "totalHistoricalTokens": 0,
+      "totalHistoricalRequests": 0
+    }
+  }
+}

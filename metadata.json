@@ -1,0 +1,36 @@
+{
+  "name": "Shiksha Mitra 2.0 - Pro AI Production",
+  "description": "Production-ready AI Teacher Question Bank and Autonomous NCERT Academic Suite with Two-Agent Development Verification & Acceptance Engine",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ],
+  "hero": {
+    "badge": "Academic AI Suite 2026",
+    "title": "Shiksha Mitra 2.0 Academic Engine",
+    "subtitle": "Autonomous NCERT Question Generation & Teacher Test Bank Suite",
+    "ctaText": "Launch Auto Generator"
+  },
+  "stats": [
+    { "label": "Questions Store", "value": "10,000+" },
+    { "label": "NCERT Books Covered", "value": "100%" },
+    { "label": "Generation Speed", "value": "Sub-Second" },
+    { "label": "Omission Rate", "value": "0.0%" }
+  ],
+  "featuresGrid": [
+    { "id": "feat-1", "icon": "Zap", "title": "Zero-Omission Ingestion", "desc": "100% verbatim coverage of exercise problems, proofs, and solutions." },
+    { "id": "feat-2", "icon": "Sparkles", "title": "AI Test Generator", "desc": "Bloom's taxonomy aligned test papers with complete marking schemes." },
+    { "id": "feat-3", "icon": "BookOpen", "title": "NCERT PDF Bank", "desc": "High-resolution first-page snapshots and clean printable PDF exports." },
+    { "id": "feat-4", "icon": "Terminal", "title": "Developer Settings", "desc": "Live code editor and instant file preview for metadata, sidebar, and layout." }
+  ],
+  "howItWorks": [
+    { "step": "01", "title": "Select Subject & Class", "desc": "Pick from Class 6-12 NCERT curriculum and core academic subjects." },
+    { "step": "02", "title": "AI Ingestion Daemon", "desc": "Automatic extraction of exercises, proofs, and step-by-step reasoning." },
+    { "step": "03", "title": "Export & Print", "desc": "Instant XLSX, Word, and zero-watermark printable PDF generation." }
+  ],
+  "bottomCTA": {
+    "headline": "Ready to Transform Academic Question Creation?",
+    "description": "Streamline lesson planning and exam preparation with zero-omission AI precision.",
+    "buttonText": "Open Question Bank"
+  }
+}

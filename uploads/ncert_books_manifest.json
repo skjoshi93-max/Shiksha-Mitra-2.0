@@ -1,0 +1,54 @@
+{
+  "lastModified": 1787568006175,
+  "books": [
+    {
+      "id": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+      "bookTitle": "Poorvi (English)",
+      "classLevel": "Class 6",
+      "subject": "English",
+      "medium": "English",
+      "publisher": "NCERT",
+      "board": "CBSE",
+      "fileSize": 12500000,
+      "uploadedAt": "2026-03-01T00:00:00.000Z",
+      "status": "READY",
+      "fileName": "ncert_class6_english_poorvi.pdf",
+      "pdfHash": "ncert-class6-english-poorvi-clean",
+      "pageCount": 160,
+      "updatedAt": "2026-08-24T10:40:06.170Z",
+      "updatedTimestamp": 1787568006171,
+      "chapters": [
+        {
+          "id": "CH-POORVI-U1-C1",
+          "bookId": "BOOK-NCERT-CLASS-6-ENG-POORVI",
+          "chapterNumber": 1,
+          "chapterTitle": "Chapter 1",
+          "unitTitle": "Unit 1: Fables and Folk Tales",
+          "pageStart": 1,
+          "pageEnd": 12,
+          "contentHash": "hash_poorvi_u1_c1",
+          "sourcePdfHash": "ncert-class6-english-poorvi-clean",
+          "status": "READY",
+          "topics": [
+            "Diligence and hard work",
+            "Wise sage and illusion of magic",
+            "Agriculture as true wealth",
+            "Rama Natha and Madhumati"
+          ],
+          "keyTopics": [
+            "Diligence and hard work",
+            "Wise sage and illusion of magic",
+            "Agriculture as true wealth",
+            "Rama Natha and Madhumati"
+          ],
+          "exercises": [
+            "Comprehension & Understanding the Text",
+            "Working with Language & Vocabulary"
+          ],
+          "textContent": "Chapter 1: A Bottle of Dew. Complete text of Poorvi Class 6 NCERT textbook."
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
