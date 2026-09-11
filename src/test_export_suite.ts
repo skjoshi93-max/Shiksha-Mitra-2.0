@@ -3,6 +3,7 @@ import {
   validateExportHeaders,
   buildInterviewBankCSV,
   buildNcertPDFCSV,
+  buildSkillAssessmentCSV,
   stripLeadingOptionLabel,
   formatSkillAssessmentOptions,
 } from './lib/unifiedQuestionExport';
@@ -56,6 +57,48 @@ function runExportSchemaTests() {
   const optStr = 'Option A: Paris | Option B: London | Option C: Berlin | Option D: Madrid';
   const formattedStr = formatSkillAssessmentOptions(optStr);
   assert(formattedStr === 'Paris | London | Berlin | Madrid', 'Option String formatted with pipe separators and stripped labels', `Got: "${formattedStr}"`);
+
+  // TEST 1D: Short Answer and Long Answer Question types have empty options ("")
+  const saqQ = {
+    question: 'Explain the difference between formative and summative assessment.',
+    type: 'Short Answer Question',
+    options: { A: 'A) Foo', B: 'B) Bar', C: 'C) Baz', D: 'D) Qux' },
+    answer: 'Formative is ongoing diagnostic evaluation while summative is terminal evaluation.',
+    marks: 3,
+  };
+  const saqOptions = formatSkillAssessmentOptions(saqQ.options, saqQ);
+  assert(saqOptions === '', 'Short Answer Question options are strictly empty string ("")', `Got: "${saqOptions}"`);
+
+  const laqQ = {
+    question: 'Critically analyze how NEP 2020 competency framework transforms high school mathematics pedagogy.',
+    type: 'Long Answer Question',
+    options: { A: '1', B: '2', C: '3', D: '4' },
+    answer: 'Detailed pedagogical analysis essay criteria covering shift from rote to experiential learning.',
+    marks: 5,
+  };
+  const laqOptions = formatSkillAssessmentOptions(laqQ.options, laqQ);
+  assert(laqOptions === '', 'Long Answer Question options are strictly empty string ("")', `Got: "${laqOptions}"`);
+
+  // TEST 1E: buildSkillAssessmentCSV schema and content
+  const sampleAssessment = {
+    questions: [
+      {
+        question: 'What is the capital of France?',
+        type: 'MCQ',
+        options: { A: 'Paris', B: 'London', C: 'Berlin', D: 'Rome' },
+        correctAnswer: 'A',
+        marks: 1,
+      },
+      saqQ,
+      laqQ,
+    ],
+  };
+  const csvOutput = buildSkillAssessmentCSV(sampleAssessment);
+  const csvLines = csvOutput.split('\n');
+  assert(csvLines[0] === 'question,type,options,answer,marks', 'Skill Assessment CSV exact header schema', `Got: "${csvLines[0]}"`);
+  assert(csvLines.length === 4, 'Skill Assessment CSV contains header + 3 question rows');
+  assert(csvLines[2].includes(',"Short Answer Question","",'), 'SAQ CSV row has empty options ("") without offset commas');
+  assert(csvLines[3].includes(',"Long Answer Question","",'), 'LAQ CSV row has empty options ("") without offset commas');
 
   // TEST 2: Interview Bank AI Schema
   const ibSchema = MASTER_SCHEMAS.interview_bank;

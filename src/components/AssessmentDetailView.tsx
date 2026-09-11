@@ -26,6 +26,7 @@ import { Assessment, AssessmentQuestion, DifficultyLevel } from '../types';
 import { exportAssessmentQuestionsToCSV } from '../lib/unifiedQuestionExport';
 import { MathRenderer } from './academic/MathRenderer';
 import { CoursePlayerWorkspace } from './certification/CoursePlayerWorkspace';
+import { QuestionTypeBadge } from './QuestionTypeBadge';
 
 const formatDateDisplay = (dateString: string) => {
   try {
@@ -388,9 +389,12 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
                     onChange={() => handleToggleSelect(q.id)}
                     className="mt-1 rounded-lg border-slate-300 text-indigo-600 focus:ring-indigo-500"
                   />
-                  <span className="rounded-xl bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                    Q{idx + 1}
-                  </span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                    <span className="rounded-xl bg-indigo-100 px-2.5 py-1 text-xs font-black text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                      Q{idx + 1}
+                    </span>
+                    <QuestionTypeBadge type={q.type || q.questionType || (assessment as any).questionType || 'MCQ'} />
+                  </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                       <MathRenderer text={q.question} />
@@ -435,21 +439,45 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
                 </div>
               </div>
 
-              {/* Options Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium pl-8">
-                <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'A' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                  A. <MathRenderer text={q.options.A} /> {q.correctAnswer === 'A' && '✓ (Correct)'}
-                </div>
-                <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'B' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                  B. <MathRenderer text={q.options.B} /> {q.correctAnswer === 'B' && '✓ (Correct)'}
-                </div>
-                <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'C' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                  C. <MathRenderer text={q.options.C} /> {q.correctAnswer === 'C' && '✓ (Correct)'}
-                </div>
-                <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'D' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                  D. <MathRenderer text={q.options.D} /> {q.correctAnswer === 'D' && '✓ (Correct)'}
-                </div>
-              </div>
+              {/* Options Grid or Open-Ended Model Answer */}
+              {(() => {
+                const normType = String(q.type || q.questionType || '').toLowerCase().trim();
+                const isSaqOrLaq = normType.includes('short answer') || normType === 'saq' || normType.includes('long answer') || normType === 'laq' || normType.includes('essay');
+                const hasValidOptions = q.options && (Boolean(q.options.A) || Boolean(q.options.B) || Boolean(q.options.C) || Boolean(q.options.D));
+
+                if (isSaqOrLaq || !hasValidOptions) {
+                  return (
+                    <div className="ml-8 rounded-2xl border border-emerald-200/80 bg-emerald-50/50 p-3.5 text-xs dark:border-emerald-900/60 dark:bg-emerald-950/20 text-emerald-900 dark:text-emerald-200">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-emerald-800 dark:text-emerald-300 uppercase text-[10px] tracking-wider">
+                          Model Answer & Evaluation Rubric:
+                        </span>
+                        <QuestionTypeBadge type={q.type || q.questionType || (isSaqOrLaq ? 'Short Answer Question' : 'Open-Ended')} />
+                      </div>
+                      <div className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                        <MathRenderer text={q.answer || q.correctAnswer || q.explanation || 'Direct pedagogical reference response & grading criteria.'} />
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium pl-8">
+                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'A' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
+                      A. <MathRenderer text={q.options.A} /> {q.correctAnswer === 'A' && '✓ (Correct)'}
+                    </div>
+                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'B' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
+                      B. <MathRenderer text={q.options.B} /> {q.correctAnswer === 'B' && '✓ (Correct)'}
+                    </div>
+                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'C' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
+                      C. <MathRenderer text={q.options.C} /> {q.correctAnswer === 'C' && '✓ (Correct)'}
+                    </div>
+                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'D' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
+                      D. <MathRenderer text={q.options.D} /> {q.correctAnswer === 'D' && '✓ (Correct)'}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Explanation Box */}
               <div className="ml-8 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-3 text-xs text-slate-700 dark:border-indigo-950 dark:bg-indigo-950/20 dark:text-slate-300">

@@ -56,6 +56,7 @@ import {
 } from '../lib/db';
 import { downloadFile, buildInterviewBankCSV, buildNcertPDFCSV } from '../lib/unifiedQuestionExport';
 import { NativeShikshaMitraSolutionRenderer } from './academic/NativeShikshaMitraSolutionRenderer';
+import { QuestionTypeBadge } from './QuestionTypeBadge';
 
 interface QuestionBankViewProps {
   questions: Question[];
@@ -977,6 +978,7 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-800 text-[11px] font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-800/50">
                     <th className="p-4">ID</th>
+                    <th className="p-4">Format / Type</th>
                     <th className="p-4">Question</th>
                     <th className="p-4">Category</th>
                     <th className="p-4">Difficulty</th>
@@ -988,6 +990,9 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                   {filteredInterviewQuestions.map(q => (
                     <tr key={q.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">{q.id}</td>
+                      <td className="p-4">
+                        <QuestionTypeBadge type={q.questionType || 'Conceptual'} />
+                      </td>
                       <td className="p-4 font-medium text-slate-800 dark:text-slate-200 max-w-md truncate">
                         <MathRenderer text={q.question} />
                       </td>
@@ -1252,6 +1257,7 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-800 text-[11px] font-black uppercase text-slate-400 bg-slate-50/50 dark:bg-slate-800/50">
                     <th className="p-4">ID</th>
+                    <th className="p-4">Format</th>
                     <th className="p-4">Chapter / Topic</th>
                     <th className="p-4">Question Text</th>
                     <th className="p-4">Difficulty</th>
@@ -1263,6 +1269,9 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                   {filteredNcertQuestions.map(q => (
                     <tr key={q.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="p-4 font-mono font-bold text-emerald-600 dark:text-emerald-400">{q.id}</td>
+                      <td className="p-4">
+                        <QuestionTypeBadge type={(q as any).questionType || (q as any).type || 'Short Answer Question'} />
+                      </td>
                       <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">{(q as any).chapter || q.category}</td>
                       <td className="p-4 font-medium text-slate-800 dark:text-slate-200 max-w-md truncate">
                         <MathRenderer text={q.question} />
@@ -1344,7 +1353,7 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
             <div className="p-12 text-center">
               <Award className="h-10 w-10 text-slate-300 mx-auto mb-3" />
               <p className="text-sm font-bold text-slate-700 dark:text-slate-300">No Skill Assessments found</p>
-              <p className="text-xs text-slate-400 mt-1">Create or import teacher certification assessments in the Skill Assessments section.</p>
+              <p className="text-xs text-slate-400 mt-1">Create or import teacher skill assessments in the Skill Assessments section.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -1433,8 +1442,9 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                         </td>
 
                         {/* Questions */}
-                        <td className="p-4 font-extrabold text-slate-900 dark:text-white align-top whitespace-nowrap">
-                          {asm.totalQuestions || asm.questions?.length || 0} items
+                        <td className="p-4 font-extrabold text-slate-900 dark:text-white align-top whitespace-nowrap space-y-1">
+                          <div>{asm.totalQuestions || asm.questions?.length || 0} items</div>
+                          <QuestionTypeBadge type={(asm as any).questionType || asm.questions?.[0]?.type || asm.questions?.[0]?.questionType || 'MCQ'} />
                         </td>
 
                         {/* Actions Column */}

@@ -114,7 +114,7 @@ export const TeacherTestRunnerModal: React.FC<TeacherTestRunnerModalProps> = ({
                 {assessment.title}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Teacher Certification Mode  |  Pass Criteria: {assessment.passScore}%
+                Teacher Assessment Mode  |  Pass Criteria: {assessment.passScore}%
               </p>
             </div>
           </div>

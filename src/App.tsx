@@ -10,7 +10,6 @@ import { AIGeneratorView } from './components/AIGeneratorView';
 import { QuestionBankView } from './components/QuestionBankView';
 import { SettingsView } from './components/SettingsView';
 import { SkillAssessmentsView } from './components/SkillAssessmentsView';
-import { SkillCertificationView } from './components/SkillCertificationView';
 import { NcertPdfModule } from './components/NcertPdfModule';
 import { QuestionModal } from './components/QuestionModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -40,8 +39,7 @@ function parseTabFromHash(hash: string): NavTab | null {
   if (clean === 'generator') return 'generator';
   if (clean === 'csv-generator' || clean === 'ncert-pdf') return 'csv-generator';
   if (clean === 'bank') return 'bank';
-  if (clean === 'assessments') return 'assessments';
-  if (clean === 'certification' || clean === 'skill-certification') return 'certification';
+  if (clean === 'assessments' || clean === 'certification' || clean === 'skill-certification') return 'assessments';
   if (clean === 'settings') return 'settings';
   return null;
 }
@@ -287,10 +285,6 @@ export default function App() {
 
             {activeTab === 'assessments' && (
               <SkillAssessmentsView />
-            )}
-
-            {activeTab === 'certification' && (
-              <SkillCertificationView />
             )}
 
             {activeTab === 'csv-generator' && (

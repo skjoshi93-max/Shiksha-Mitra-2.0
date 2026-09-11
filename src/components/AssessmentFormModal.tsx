@@ -214,7 +214,7 @@ export const AssessmentFormModal: React.FC<AssessmentFormModalProps> = ({
                 <div className="peer h-6 w-11 rounded-full bg-slate-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-emerald-600 peer-checked:after:translate-x-full dark:bg-slate-800"></div>
               </label>
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Active (Visible to teachers for certification)
+                Active (Visible to teachers for assessment)
               </span>
             </div>
           </div>

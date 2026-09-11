@@ -2139,6 +2139,47 @@ function getCuratedServerCurriculumQuestions(subject: string, count: number, top
 function buildQuestionTypePromptDirective(questionType: string): string {
   const normType = (questionType || '').toLowerCase().trim();
 
+  if (
+    normType.includes('mcq + saq + laq') ||
+    normType.includes('mcq+saq+laq') ||
+    (normType.includes('mcq') && (normType.includes('saq') || normType.includes('short')) && (normType.includes('laq') || normType.includes('long')))
+  ) {
+    return `CRITICAL QUESTION TYPE MANDATE - STRICT BALANCED COMBINATION (MCQ + SAQ + LAQ):
+- You MUST return a strictly balanced, even distribution of all three formats across the generated batch:
+  1. Multiple Choice Questions ("MCQ") - High quality 4-option question (options A, B, C, D) with 1 unambiguous correct answer.
+  2. Short Answer Questions ("Short Answer Question") - Open-ended direct prompts requiring concise, direct conceptual explanations (2-3 marks, 2-4 sentences or key pedagogical points).
+  3. Long Answer Questions ("Long Answer Question") - Detailed analytical essay prompts requiring in-depth inquiry, structured multi-part explanations, derivations, case evaluations, or grading criteria (4-5 marks).
+- Strictly enforce a balanced 1:1:1 distribution across the three formats (e.g. 1/3 MCQ, 1/3 Short Answer Question, 1/3 Long Answer Question).
+- For each generated question, the "questionType" field MUST BE strictly set to one of: "MCQ", "Short Answer Question", or "Long Answer Question".
+- For MCQs: provide valid options A, B, C, D and correctAnswer.
+- For Short Answer Question and Long Answer Question: they MUST be open-ended direct prompts (SAQ) or detailed analytical essay prompts (LAQ) with NO multiple-choice options (options left empty or ""), and the reference answer key or scoring criteria must be safely placed in the answer/explanation/hint field.`;
+  }
+
+  if (normType.includes('short answer') || normType === 'saq' || normType.includes('short')) {
+    return `CRITICAL QUESTION TYPE MANDATE - STRICT SHORT ANSWER QUESTIONS (SAQ):
+- When "Short Answer Question" is selected, you MUST return open-ended direct prompts.
+- Every generated question MUST be an open-ended direct prompt (2-3 marks) requiring a concise, direct conceptual explanation (2-4 sentences or specific key points) without multiple-choice options.
+- The question statement MUST be an open-ended direct prompt. Do NOT provide multiple-choice options A, B, C, D; set "options" to empty string ("") or empty object.
+- In the "questionType" field, strictly put "Short Answer Question".
+- In the "answer" / "explanation" / "hint" field, safely provide the AI's reference answer key and grading criteria.`;
+  }
+
+  if (normType.includes('long answer') || normType === 'laq' || normType.includes('essay') || normType.includes('descriptive')) {
+    return `CRITICAL QUESTION TYPE MANDATE - STRICT LONG ANSWER QUESTIONS (LAQ):
+- When "Long Answer Question" is selected, you MUST return detailed analytical essay prompts.
+- Every generated question MUST be a detailed analytical essay prompt (4-5 marks) requiring comprehensive in-depth inquiry, structured multi-part explanations, derivations, proofs, case evaluations, or essay rubrics without multiple-choice options.
+- The question statement MUST be a detailed analytical essay prompt. Do NOT provide multiple-choice options A, B, C, D; set "options" to empty string ("") or empty object.
+- In the "questionType" field, strictly put "Long Answer Question".
+- In the "answer" / "explanation" / "hint" field, safely provide the AI's reference answer key and analytical grading criteria.`;
+  }
+
+  if (normType === 'mcq' || normType.includes('multiple choice') || normType.includes('mcqs')) {
+    return `CRITICAL QUESTION TYPE MANDATE - STRICT MULTIPLE CHOICE (MCQ):
+- Every generated question MUST be a high-quality Multiple Choice question with 4 clear, plausible options (A, B, C, D) and 1 unambiguous correct answer.
+- In the "questionType" field, strictly put "MCQ".
+- In the "hint" field, clearly specify the correct option and explain why other options are suboptimal.`;
+  }
+
   if (normType.includes('true / false') || normType.includes('true/false') || normType.includes('true or false') || normType.includes('true_false')) {
     return `CRITICAL QUESTION TYPE MANDATE - STRICT TRUE / FALSE:
 - Every generated question MUST be a definitive, clear, and unambiguous TRUE or FALSE pedagogical or subject proposition/statement.
@@ -2213,20 +2254,6 @@ function buildQuestionTypePromptDirective(questionType: string): string {
 - Focus on grammatical structures, syntax, tense/voice transformation, error spotting, vocabulary in context, or reading comprehension analysis.
 - In the "questionType" field, strictly put "Grammar & Comprehension".
 - In the "hint" field, provide the grammar rule, correct sentence reconstruction, or textual evidence.`;
-  }
-
-  if (normType.includes('short answer') || normType.includes('saq')) {
-    return `CRITICAL QUESTION TYPE MANDATE - STRICT SHORT ANSWER QUESTIONS (SAQ):
-- Every generated question MUST be a focused, targeted 2-3 mark conceptual question requiring a concise 2-4 sentence explanation or specific points.
-- In the "questionType" field, strictly put "Short Answer Questions (SAQ)".
-- In the "hint" field, provide the key points and scoring criteria.`;
-  }
-
-  if (normType.includes('long answer') || normType.includes('laq') || normType.includes('essay')) {
-    return `CRITICAL QUESTION TYPE MANDATE - STRICT LONG ANSWER QUESTIONS (LAQ):
-- Every generated question MUST be an in-depth 4-5 mark inquiry requiring structured multi-part explanations, derivations, proofs, or comprehensive descriptions.
-- In the "questionType" field, strictly put "Long Answer Questions (LAQ)".
-- In the "hint" field, provide a multi-point scoring rubric.`;
   }
 
   if (normType.includes('mcq') || normType.includes('multiple choice')) {
@@ -2623,9 +2650,16 @@ Return ONLY a valid JSON array of audited objects matching the exact input schem
       });
 
       if (result.items && result.items.length > 0) {
+        const selectedType = questionType;
+        const finalQuestions = result.items.map((q: any) => ({
+          ...q,
+          type: q.type || q.questionType || selectedType,
+        }));
+        console.log("[Shiksha Mitra Debug] Selected Type:", selectedType, "-> Generated Formats Array:", finalQuestions.map(q => q.type));
+
         return res.json({
           success: true,
-          questions: result.items,
+          questions: finalQuestions,
           jobId: result.job.jobId,
           completedCount: result.completedCount,
           requestedCount: result.job.requestedCount,
@@ -2656,10 +2690,16 @@ Return ONLY a valid JSON array of audited objects matching the exact input schem
     : [];
 
   const mergedQuestions = [...savedItems, ...fallbackQuestions];
+  const selectedType = questionType;
+  const finalQuestions = mergedQuestions.map((q: any) => ({
+    ...q,
+    type: q.type || q.questionType || selectedType,
+  }));
+  console.log("[Shiksha Mitra Debug] Selected Type:", selectedType, "-> Generated Formats Array:", finalQuestions.map(q => q.type));
 
   return res.json({
     success: true,
-    questions: mergedQuestions,
+    questions: finalQuestions,
     jobId: existingJob?.jobId || `FALLBACK-${Date.now()}`,
     completedCount: mergedQuestions.length,
     requestedCount: requestedTotal,
@@ -2787,37 +2827,74 @@ Return ONLY a valid JSON array matching this schema:
       const targetTopic = topics.length > 0
         ? (topics.includes(cleanQ.topic) ? cleanQ.topic : topics[idx % topics.length])
         : (cleanQ.topic || 'Core Competency');
-      const ans = cleanQ.correctAnswer || targetAnswerLetters[idx % 4];
+
+      let assignedType = cleanQ.questionType || cleanQ.type || questionType;
+      if (questionType === 'MCQ + SAQ + LAQ') {
+        const mod = (startIdx + idx) % 3;
+        if (mod === 0) assignedType = 'MCQ';
+        else if (mod === 1) assignedType = 'Short Answer Question';
+        else assignedType = 'Long Answer Question';
+      } else if (questionType === 'Short Answer Question' || questionType.toLowerCase().includes('short answer')) {
+        assignedType = 'Short Answer Question';
+      } else if (questionType === 'Long Answer Question' || questionType.toLowerCase().includes('long answer')) {
+        assignedType = 'Long Answer Question';
+      }
+
+      const normAssigned = String(assignedType).toLowerCase().trim();
+      const isSaq = normAssigned.includes('short answer') || normAssigned === 'saq' || normAssigned.includes('short');
+      const isLaq = normAssigned.includes('long answer') || normAssigned === 'laq' || normAssigned.includes('essay') || normAssigned.includes('descriptive');
+      const isSaqOrLaq = isSaq || isLaq;
+
+      const finalOpts = isSaqOrLaq
+        ? { A: '', B: '', C: '', D: '' }
+        : {
+            A: opts.A || '',
+            B: opts.B || '',
+            C: opts.C || '',
+            D: opts.D || '',
+          };
+
+      const ans = isSaqOrLaq
+        ? (cleanQ.answer || cleanQ.referenceAnswer || cleanQ.gradingCriteria || cleanQ.explanation || 'Reference Answer Key & Grading Criteria')
+        : (cleanQ.correctAnswer || targetAnswerLetters[idx % 4]);
+
+      const marks = cleanQ.marks !== undefined
+        ? cleanQ.marks
+        : (isLaq ? 5 : isSaq ? 3 : 1);
 
       return {
         ...cleanQ,
         id: `Q${qIdx}`,
         subject: cleanQ.subject || subject,
         topic: targetTopic,
-        questionType: cleanQ.questionType || questionType,
+        type: assignedType,
+        questionType: assignedType,
         difficulty: ['Easy', 'Medium', 'Hard'].includes(cleanQ.difficulty) ? cleanQ.difficulty : (idx % 3 === 0 ? 'Easy' : idx % 3 === 1 ? 'Medium' : 'Hard'),
-        marks: cleanQ.marks || 1,
+        marks,
         qualityScore: cleanQ.qualityScore || 95,
-        options: {
-          A: opts.A || '',
-          B: opts.B || '',
-          C: opts.C || '',
-          D: opts.D || '',
-        },
+        options: finalOpts,
         correctAnswer: ans,
+        answer: ans,
         explanation: cleanQ.explanation || `Pedagogical and conceptual explanation proving the key concept.`,
         verified: true,
         verificationStatus: 'VERIFIED',
       };
     });
 
+    const selectedType = questionType;
+    const finalQuestions = sanitizedBatch.map((q: any) => ({
+      ...q,
+      type: q.type || q.questionType || selectedType,
+    }));
+    console.log("[Shiksha Mitra Debug] Selected Type:", selectedType, "-> Generated Formats Array:", finalQuestions.map(q => q.type));
+
     return res.json({
       success: true,
-      questions: sanitizedBatch,
+      questions: finalQuestions,
       jobId: effectiveJobId,
-      batchCount: sanitizedBatch.length,
+      batchCount: finalQuestions.length,
       offset: Number(offset) || 0,
-      totalQuestions: Number(totalQuestions) || sanitizedBatch.length,
+      totalQuestions: Number(totalQuestions) || finalQuestions.length,
       actualModelUsed,
       fallbackOccurred,
     });
@@ -2841,6 +2918,7 @@ app.post('/api/generate-assessment', async (req, res) => {
     subject = 'Mathematics',
     classLevel = 'Class 10',
     board = 'CBSE',
+    questionType = 'MCQ',
     totalQuestions = 10,
     duration = 30,
     passScore = 60,
@@ -2867,11 +2945,14 @@ app.post('/api/generate-assessment', async (req, res) => {
         processingMode: processingMode as 'MANUAL' | 'AUTO_FAILOVER',
         catalog: serverModelCatalog,
         maxBatchSize: 10,
-        rawConfig: { title, subject, classLevel, board, duration, passScore, topics, language },
+        rawConfig: { title, subject, classLevel, board, questionType, duration, passScore, topics, language },
         generateBatch: async ({ model: activeModel, neededCount, completedItems, offset }) => {
           const startIdx = offset + 1;
+          const typeDirective = buildQuestionTypePromptDirective(questionType);
           const prompt = `You are a Senior Teacher Educator, Psychometric Evaluator, and National Board Assessment Director for the ShikshaMitra system.
-Generate exactly ${neededCount} complete, high-quality, authentic MCQs for a professional TEACHER COMPETENCY & ELIGIBILITY ASSESSMENT titled "${title}" for ${subject} (Class Category: "${classLevel}", Board/Standards: "${board}").
+Generate exactly ${neededCount} complete, high-quality, authentic questions for a professional TEACHER COMPETENCY & ELIGIBILITY ASSESSMENT titled "${title}" for ${subject} (Class Category: "${classLevel}", Board/Standards: "${board}").
+
+${typeDirective}
 
 CRITICAL ASSESSMENT PURPOSE (TEACHER ELIGIBILITY RELEVANCE GATE):
 - The SOLE PURPOSE of this assessment is to evaluate whether a TEACHER (the candidate) is academically, conceptually, and pedagogically competent to teach ${subject} to students in ${classLevel}.
@@ -2958,20 +3039,47 @@ Return ONLY a valid JSON array matching this schema:
           const cleanQ = sanitizeQuestionObject(item);
           const qText = cleanQ.question || '';
           if (serverProofread(qText) && !isServerBanned(qText)) {
+            const idx = existing.length;
+            let assignedType = cleanQ.questionType || cleanQ.type || questionType;
+            if (questionType === 'MCQ + SAQ + LAQ') {
+              const mod = idx % 3;
+              if (mod === 0) assignedType = 'MCQ';
+              else if (mod === 1) assignedType = 'Short Answer Question';
+              else assignedType = 'Long Answer Question';
+            } else if (questionType === 'Short Answer Question' || questionType.toLowerCase().includes('short answer')) {
+              assignedType = 'Short Answer Question';
+            } else if (questionType === 'Long Answer Question' || questionType.toLowerCase().includes('long answer')) {
+              assignedType = 'Long Answer Question';
+            }
+
+            const normAssigned = String(assignedType).toLowerCase().trim();
+            const isSaq = normAssigned.includes('short answer') || normAssigned === 'saq' || normAssigned.includes('short');
+            const isLaq = normAssigned.includes('long answer') || normAssigned === 'laq' || normAssigned.includes('essay') || normAssigned.includes('descriptive');
+            const isSaqOrLaq = isSaq || isLaq;
+
             const opts = cleanQ.options || {};
             const hasBannedOption = Object.values(opts).some((o: any) => isServerBanned(String(o)));
-            if (!hasBannedOption && opts.A && opts.B && opts.C && opts.D) {
-              const idx = existing.length;
+            if (hasBannedOption) {
+              return { valid: false, sanitized: cleanQ, dedupKey: '', reason: 'Option contains banned phrases' };
+            }
+
+            if (isSaqOrLaq || (opts.A && opts.B && opts.C && opts.D)) {
               cleanQ.id = `Q${idx + 1}`;
               cleanQ.subject = cleanQ.subject || subject;
               cleanQ.topic = cleanQ.topic || (topics.length > 0 ? topics[idx % topics.length] : 'Curriculum Core');
+              cleanQ.type = assignedType;
+              cleanQ.questionType = assignedType;
               cleanQ.difficulty = ['Easy', 'Medium', 'Hard'].includes(cleanQ.difficulty)
                 ? cleanQ.difficulty
                 : (idx < easyCount ? 'Easy' : idx < easyCount + mediumCount ? 'Medium' : 'Hard');
-              cleanQ.marks = cleanQ.marks || 1;
+              cleanQ.marks = cleanQ.marks !== undefined ? cleanQ.marks : (isLaq ? 5 : isSaq ? 3 : 1);
               cleanQ.qualityScore = cleanQ.qualityScore || 94;
               cleanQ.verified = true;
               cleanQ.verificationStatus = 'VERIFIED';
+              if (isSaqOrLaq) {
+                cleanQ.options = { A: '', B: '', C: '', D: '' };
+                cleanQ.answer = cleanQ.answer || cleanQ.referenceAnswer || cleanQ.gradingCriteria || cleanQ.explanation || 'Reference Answer Key & Grading Criteria';
+              }
 
               return {
                 valid: true,
@@ -2980,7 +3088,7 @@ Return ONLY a valid JSON array matching this schema:
               };
             }
           }
-          return { valid: false, sanitized: cleanQ, dedupKey: '', reason: 'Failed MCQ schema validation or options missing' };
+          return { valid: false, sanitized: cleanQ, dedupKey: '', reason: 'Failed schema validation or options missing' };
         },
       });
 
@@ -2988,20 +3096,54 @@ Return ONLY a valid JSON array matching this schema:
         // Balance answers if biased
         const targetAnswerLetters = ['B', 'C', 'A', 'D'];
         const validatedQuestions = result.items.map((q: any, idx: number) => {
-          let opts = {
-            A: q.options?.A || 'Option A',
-            B: q.options?.B || 'Option B',
-            C: q.options?.C || 'Option C',
-            D: q.options?.D || 'Option D',
-          };
-          let ans = ['A', 'B', 'C', 'D'].includes(q.correctAnswer) ? q.correctAnswer : targetAnswerLetters[idx % 4];
+          let assignedType = q.type || q.questionType || questionType;
+          if (questionType === 'MCQ + SAQ + LAQ') {
+            const mod = idx % 3;
+            if (mod === 0) assignedType = 'MCQ';
+            else if (mod === 1) assignedType = 'Short Answer Question';
+            else assignedType = 'Long Answer Question';
+          } else if (questionType === 'Short Answer Question' || questionType.toLowerCase().includes('short answer')) {
+            assignedType = 'Short Answer Question';
+          } else if (questionType === 'Long Answer Question' || questionType.toLowerCase().includes('long answer')) {
+            assignedType = 'Long Answer Question';
+          }
+
+          const normAssigned = String(assignedType).toLowerCase().trim();
+          const isSaq = normAssigned.includes('short answer') || normAssigned === 'saq' || normAssigned.includes('short');
+          const isLaq = normAssigned.includes('long answer') || normAssigned === 'laq' || normAssigned.includes('essay') || normAssigned.includes('descriptive');
+          const isSaqOrLaq = isSaq || isLaq;
+
+          let opts = isSaqOrLaq
+            ? { A: '', B: '', C: '', D: '' }
+            : {
+                A: q.options?.A || 'Option A',
+                B: q.options?.B || 'Option B',
+                C: q.options?.C || 'Option C',
+                D: q.options?.D || 'Option D',
+              };
+
+          let ans = isSaqOrLaq
+            ? (q.answer || q.referenceAnswer || q.gradingCriteria || q.explanation || 'Reference Answer Key & Grading Criteria')
+            : (['A', 'B', 'C', 'D'].includes(q.correctAnswer) ? q.correctAnswer : targetAnswerLetters[idx % 4]);
+
           return {
             ...q,
             id: `Q${idx + 1}`,
+            type: assignedType,
+            questionType: assignedType,
             options: opts,
             correctAnswer: ans,
+            answer: ans,
+            marks: q.marks !== undefined ? q.marks : (isLaq ? 5 : isSaq ? 3 : 1),
           };
         });
+
+        const selectedType = questionType;
+        const finalQuestions = validatedQuestions.map((q: any) => ({
+          ...q,
+          type: q.type || q.questionType || selectedType,
+        }));
+        console.log("[Shiksha Mitra Debug] Selected Type:", selectedType, "-> Generated Formats Array:", finalQuestions.map(q => q.type));
 
         const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const generatedAsm = sanitizeAssessmentObject({
@@ -3015,12 +3157,12 @@ Return ONLY a valid JSON array matching this schema:
           duration,
           passScore,
           active: true,
-          questions: validatedQuestions,
-          totalQuestions: validatedQuestions.length,
-          totalMarks: validatedQuestions.reduce((sum: number, q: any) => sum + (q.marks || 1), 0),
+          questions: finalQuestions,
+          totalQuestions: finalQuestions.length,
+          totalMarks: finalQuestions.reduce((sum: number, q: any) => sum + (q.marks || 1), 0),
           createdDate: new Date().toISOString(),
           updatedDate: new Date().toISOString(),
-          qualityScore: Math.round(validatedQuestions.reduce((sum: number, q: any) => sum + (q.qualityScore || 94), 0) / validatedQuestions.length),
+          qualityScore: Math.round(finalQuestions.reduce((sum: number, q: any) => sum + (q.qualityScore || 94), 0) / finalQuestions.length),
           verified: true,
           verificationStatus: 'VERIFIED',
         });
@@ -3055,10 +3197,40 @@ Return ONLY a valid JSON array matching this schema:
     ? getCuratedServerCurriculumQuestions(subject, neededFallbackCount, topics[0])
     : [];
 
-  const mergedQuestions = [...savedItems, ...fallbackQuestions].slice(0, total).map((q: any, idx: number) => ({
+  const mergedQuestions = [...savedItems, ...fallbackQuestions].slice(0, total).map((q: any, idx: number) => {
+    let assignedType = q.type || q.questionType || questionType;
+    if (questionType === 'MCQ + SAQ + LAQ') {
+      const mod = idx % 3;
+      if (mod === 0) assignedType = 'MCQ';
+      else if (mod === 1) assignedType = 'Short Answer Question';
+      else assignedType = 'Long Answer Question';
+    } else if (questionType === 'Short Answer Question' || questionType.toLowerCase().includes('short answer')) {
+      assignedType = 'Short Answer Question';
+    } else if (questionType === 'Long Answer Question' || questionType.toLowerCase().includes('long answer')) {
+      assignedType = 'Long Answer Question';
+    }
+
+    const normAssigned = String(assignedType).toLowerCase().trim();
+    const isSaq = normAssigned.includes('short answer') || normAssigned === 'saq' || normAssigned.includes('short');
+    const isLaq = normAssigned.includes('long answer') || normAssigned === 'laq' || normAssigned.includes('essay') || normAssigned.includes('descriptive');
+    const isSaqOrLaq = isSaq || isLaq;
+
+    return {
+      ...q,
+      id: `Q${idx + 1}`,
+      type: assignedType,
+      questionType: assignedType,
+      options: isSaqOrLaq ? { A: '', B: '', C: '', D: '' } : (q.options || { A: '', B: '', C: '', D: '' }),
+      marks: q.marks !== undefined ? q.marks : (isLaq ? 5 : isSaq ? 3 : 1),
+    };
+  });
+
+  const selectedType = questionType;
+  const finalQuestions = mergedQuestions.map((q: any) => ({
     ...q,
-    id: `Q${idx + 1}`,
+    type: q.type || q.questionType || selectedType,
   }));
+  console.log("[Shiksha Mitra Debug] Selected Type:", selectedType, "-> Generated Formats Array:", finalQuestions.map(q => q.type));
 
   const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -3075,9 +3247,9 @@ Return ONLY a valid JSON array matching this schema:
       duration,
       passScore,
       active: true,
-      questions: mergedQuestions,
-      totalQuestions: mergedQuestions.length,
-      totalMarks: mergedQuestions.length,
+      questions: finalQuestions,
+      totalQuestions: finalQuestions.length,
+      totalMarks: finalQuestions.reduce((sum: number, q: any) => sum + (q.marks || 1), 0),
       createdDate: new Date().toISOString(),
       updatedDate: new Date().toISOString(),
       qualityScore: 96,

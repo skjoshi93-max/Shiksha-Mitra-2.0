@@ -230,7 +230,7 @@ export const SkillAssessmentsView: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-full border border-rose-300/60 bg-white/80 px-3.5 py-1 text-xs font-black text-rose-900 backdrop-blur-md shadow-xs"
             >
               <Award className="h-4 w-4 text-rose-600" />
-              <span>Certification Test Bank & Skill Verification</span>
+              <span>Assessment Test Bank & Skill Verification</span>
             </div>
             <h1
               className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight"
@@ -238,7 +238,7 @@ export const SkillAssessmentsView: React.FC = () => {
               Skill Assessments Command Center
             </h1>
             <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-              AI-powered assessment generator and teacher competence certification management system. Create, manage, and benchmark skill tests.
+              AI-powered assessment generator and teacher competence evaluation management system. Create, manage, and benchmark skill tests.
             </p>
           </div>
 

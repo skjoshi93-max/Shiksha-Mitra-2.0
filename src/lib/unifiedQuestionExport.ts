@@ -284,8 +284,23 @@ export function stripLeadingOptionLabel(optionText: string): string {
 
 /**
  * Formats Skill Assessment options with pipe separators (|) and no leading option labels.
+ * For Short Answer and Long Answer question types, options are strictly returned as empty string ("").
  */
 export function formatSkillAssessmentOptions(opts: any, q?: any): string {
+  if (q && typeof q === 'object') {
+    const qType = String((q as any).type || (q as any).questionType || '').toLowerCase().trim();
+    if (
+      qType.includes('short answer') ||
+      qType.includes('long answer') ||
+      qType === 'saq' ||
+      qType === 'laq' ||
+      qType.includes('essay') ||
+      qType.includes('descriptive')
+    ) {
+      return '';
+    }
+  }
+
   let parts: string[] = [];
 
   if (typeof opts === 'string') {
@@ -455,12 +470,36 @@ export function exportAssessmentQuestionsToXLSX(
   const rows = questions.map(rawQ => {
     const q = sanitizeQuestionObject(rawQ);
 
-    const optionsStr = formatSkillAssessmentOptions(q.options, q);
+    const type = (q as any).type || q.questionType || 'MCQ';
+    const normType = String(type).toLowerCase().trim();
+    const isSaq = normType.includes('short answer') || normType === 'saq' || normType.includes('short');
+    const isLaq = normType.includes('long answer') || normType === 'laq' || normType.includes('essay') || normType.includes('descriptive');
+    const isSaqOrLaq = isSaq || isLaq;
+
+    // For "Short Answer Question" and "Long Answer Question" types:
+    // The "options" value must be set as an empty string ("") so it remains perfectly blank in Excel without adding offset commas.
+    const optionsStr = isSaqOrLaq ? '' : formatSkillAssessmentOptions(q.options, q);
 
     const questionText = q.question || (q as any).text || '';
-    const type = (q as any).type || q.questionType || 'MCQ';
-    const answer = (q as any).answer || q.correctAnswer || '';
-    const marks = (q as any).marks !== undefined ? (q as any).marks : (q.maxScore !== undefined ? q.maxScore : 1);
+
+    // The "answer" column should safely hold the AI's reference answer key or grading criteria.
+    let answer = (q as any).answer || '';
+    if (isSaq || isLaq) {
+      answer =
+        (q as any).referenceAnswer ||
+        (q as any).answerKey ||
+        (q as any).gradingCriteria ||
+        (q as any).answer ||
+        (q as any).explanation ||
+        (q as any).hint ||
+        (q as any).rubric ||
+        q.correctAnswer ||
+        '';
+    } else {
+      answer = (q as any).answer || q.correctAnswer || '';
+    }
+
+    const marks = (q as any).marks !== undefined ? (q as any).marks : (q.maxScore !== undefined ? q.maxScore : (isLaq ? 5 : isSaq ? 3 : 1));
 
     return [
       questionText,
@@ -476,10 +515,68 @@ export function exportAssessmentQuestionsToXLSX(
   return true;
 }
 
+/**
+ * Builds RFC 4180 CSV matching exactly the 5-column Skill Assessment schema:
+ * question,type,options,answer,marks
+ * For Short Answer and Long Answer question types:
+ * - "options" is strictly empty string ("") so it remains blank in Excel without offset commas
+ * - "answer" safely holds reference answer key or grading criteria
+ */
+export function buildSkillAssessmentCSV(assessmentOrQuestions: Assessment | any): string {
+  let questions: any[] = [];
+  if (Array.isArray(assessmentOrQuestions)) {
+    questions = assessmentOrQuestions;
+  } else if (assessmentOrQuestions && Array.isArray(assessmentOrQuestions.questions)) {
+    questions = assessmentOrQuestions.questions;
+  }
+
+  const schema = MASTER_SCHEMAS.skill_assessment;
+  const headers = [...schema.headers];
+  const rows = questions.map(rawQ => {
+    const q = sanitizeQuestionObject(rawQ);
+    const type = (q as any).type || q.questionType || 'MCQ';
+    const normType = String(type).toLowerCase().trim();
+    const isSaq = normType.includes('short answer') || normType === 'saq' || normType.includes('short');
+    const isLaq = normType.includes('long answer') || normType === 'laq' || normType.includes('essay') || normType.includes('descriptive');
+    const isSaqOrLaq = isSaq || isLaq;
+
+    const optionsStr = isSaqOrLaq ? '' : formatSkillAssessmentOptions(q.options, q);
+    const questionText = q.question || (q as any).text || '';
+
+    let answer = (q as any).answer || '';
+    if (isSaq || isLaq) {
+      answer =
+        (q as any).referenceAnswer ||
+        (q as any).answerKey ||
+        (q as any).gradingCriteria ||
+        (q as any).answer ||
+        (q as any).explanation ||
+        (q as any).hint ||
+        (q as any).rubric ||
+        q.correctAnswer ||
+        '';
+    } else {
+      answer = (q as any).answer || q.correctAnswer || '';
+    }
+
+    const marks = (q as any).marks !== undefined ? (q as any).marks : (q.maxScore !== undefined ? q.maxScore : (isLaq ? 5 : isSaq ? 3 : 1));
+
+    return [
+      escapeCSVCell(questionText),
+      escapeCSVCell(type),
+      escapeCSVCell(optionsStr),
+      escapeCSVCell(answer),
+      escapeCSVCell(marks),
+    ];
+  });
+
+  return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+}
+
 export const exportAssessmentQuestionsToCSV = exportAssessmentQuestionsToXLSX;
 
 /**
- * MODULE 4: Course Certification Assessment Data Bank Exporter (16-Column Master Schema)
+ * MODULE 4: Course Skill Assessment Data Bank Exporter (16-Column Master Schema)
  * Generates an Excel (.xlsx) file matching the exact 16-column master schema:
  * board, grade, subject, publisher, book, chapter, topic, type, difficulty, marks, text, option_a, option_b, option_c, option_d, answer
  */
@@ -488,7 +585,7 @@ export function exportCourseAssessmentDataBankToXLSX(
   customFilename?: string
 ): boolean {
   let questions: any[] = [];
-  let courseTitle = 'Professional Certification Course';
+  let courseTitle = 'Professional Skill Assessment Course';
   let courseSubject = 'General Professional';
   let classLevel = 'Professional & Administrative Cadres';
   let board = 'iGOT Karmayogi Framework / Govt. of India';

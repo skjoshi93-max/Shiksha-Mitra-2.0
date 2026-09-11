@@ -167,7 +167,7 @@ export const DockableAssessmentSuite: React.FC<DockableAssessmentSuiteProps> = (
             Progressive 4-Module Curriculum Tracker
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-            Skill Certification Examination
+            Skill Assessment Examination
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
             Complete the 4 training modules or launch the timed certification exam directly to evaluate scenario competencies and earn your verified certificate.

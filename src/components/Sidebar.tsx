@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
-  GraduationCap,
   FileSpreadsheet,
 } from 'lucide-react';
 
@@ -17,7 +16,7 @@ import {
  * Sidebar.tsx
  * CONTROLS: Application navigation menu, active tabs, sidebar logo branding, and system status.
  */
-export type NavTab = 'dashboard' | 'generator' | 'csv-generator' | 'bank' | 'assessments' | 'certification' | 'settings';
+export type NavTab = 'dashboard' | 'generator' | 'csv-generator' | 'bank' | 'assessments' | 'settings';
 
 interface SidebarProps {
   activeTab: NavTab;
@@ -61,11 +60,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, questi
       id: 'assessments',
       label: 'Skill Assessments',
       icon: Award,
-    },
-    {
-      id: 'certification',
-      label: 'Skill Certification',
-      icon: GraduationCap,
     },
     {
       id: 'settings',

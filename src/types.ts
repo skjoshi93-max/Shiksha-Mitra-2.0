@@ -113,18 +113,21 @@ export interface ImportValidationResult {
 export interface AssessmentQuestion {
   id: string; // e.g. Q1, Q2, or ASM-Q-001
   question: string;
+  type?: string; // e.g. 'MCQ' | 'Short Answer Question' | 'Long Answer Question'
+  questionType?: string; // e.g. 'MCQ' | 'Short Answer Question' | 'Long Answer Question'
   options: {
     A: string;
     B: string;
     C: string;
     D: string;
   };
-  correctAnswer: 'A' | 'B' | 'C' | 'D';
+  correctAnswer: 'A' | 'B' | 'C' | 'D' | string;
+  answer?: string; // Reference answer key or grading criteria
   explanation: string;
   subject: string;
   topic: string;
   difficulty: DifficultyLevel;
-  marks: number; // default 1
+  marks: number; // default 1 (or 2-3 for SAQ, 4-5 for LAQ)
   qualityScore?: number; // 0 - 100 (threshold >= 90)
   duplicateSimilarity?: number;
   validationNotes?: string[];
