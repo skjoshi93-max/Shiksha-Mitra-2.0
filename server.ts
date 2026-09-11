@@ -2515,7 +2515,8 @@ app.post('/api/generate-questions', async (req, res) => {
   // Strict category enforcement on input
   const safeCategory = LOCKED_STATIC_CATEGORIES.includes(category) ? category : 'Subject Knowledge';
 
-  const effectiveJobId = resumeJobId || jobId;
+  // Enforce fresh generation by appending timestamp unless explicitly resuming an unfinished job
+  const effectiveJobId = resumeJobId ? resumeJobId : (jobId ? `${jobId}_${Date.now()}` : `QGEN-${Date.now()}`);
   const requestedTotal = Math.max(1, Number(count) || 5);
 
   if (genAI) {
@@ -2650,6 +2651,20 @@ Return ONLY a valid JSON array of audited objects matching the exact input schem
       });
 
       if (result.items && result.items.length > 0) {
+        // Enforce storage isolation: save newly generated data using unique naming convention
+        try {
+          const storageDir = path.join(process.cwd(), 'storage', 'generated_questions');
+          if (!fs.existsSync(storageDir)) {
+            fs.mkdirSync(storageDir, { recursive: true });
+          }
+          const safeTopic = (category || subject || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 30);
+          const safeDifficulty = String(difficulty).toLowerCase().replace(/[^a-z0-9]+/g, '_');
+          const filename = `${safeTopic}_${safeDifficulty}_${Date.now()}.json`;
+          fs.writeFileSync(path.join(storageDir, filename), JSON.stringify(result.items, null, 2), 'utf-8');
+        } catch (storageErr) {
+          console.warn('[Storage Isolation] Could not persist questions JSON:', storageErr);
+        }
+
         const selectedType = questionType;
         const finalQuestions = result.items.map((q: any) => ({
           ...q,
@@ -2728,7 +2743,8 @@ app.post('/api/generate-assessment-batch', async (req, res) => {
       processingMode = 'AUTO_FAILOVER',
     } = req.body;
 
-    const effectiveJobId = jobId || `ASM-JOB-${Date.now()}`;
+    // Enforce fresh generation by appending timestamp to jobId to prevent cache hits
+    const effectiveJobId = jobId ? `${jobId}_${Date.now()}` : `ASM-BATCH-${Date.now()}`;
     const neededCount = Math.max(1, Math.min(25, Number(batchCount) || 10));
     const startIdx = (Number(offset) || 0) + 1;
 
@@ -2888,6 +2904,19 @@ Return ONLY a valid JSON array matching this schema:
     }));
     console.log("[Shiksha Mitra Debug] Selected Type:", selectedType, "-> Generated Formats Array:", finalQuestions.map(q => q.type));
 
+    // Enforce storage isolation: save newly generated batch using unique naming convention
+    try {
+      const storageDir = path.join(process.cwd(), 'storage', 'generated_assessments');
+      if (!fs.existsSync(storageDir)) {
+        fs.mkdirSync(storageDir, { recursive: true });
+      }
+      const safeTopic = (topics[0] || subject || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 30);
+      const filename = `${safeTopic}_batch_${Date.now()}.json`;
+      fs.writeFileSync(path.join(storageDir, filename), JSON.stringify({ batch: finalQuestions, meta: { subject, title, classLevel } }, null, 2), 'utf-8');
+    } catch (saveErr) {
+      console.warn('[Storage Isolation] Could not persist batch JSON:', saveErr);
+    }
+
     return res.json({
       success: true,
       questions: finalQuestions,
@@ -2929,7 +2958,8 @@ app.post('/api/generate-assessment', async (req, res) => {
     processingMode = 'AUTO_FAILOVER',
   } = req.body;
 
-  const effectiveJobId = resumeJobId || jobId;
+  // Enforce fresh generation by appending timestamp to jobId unless explicitly resuming an unfinished job
+  const effectiveJobId = resumeJobId ? resumeJobId : (jobId ? `${jobId}_${Date.now()}` : `ASM-JOB-${Date.now()}`);
   const total = Math.max(1, Number(totalQuestions) || 10);
   const easyCount = Math.round((total * (difficultyDistribution.Easy || 30)) / 100);
   const hardCount = Math.round((total * (difficultyDistribution.Hard || 20)) / 100);
@@ -3166,6 +3196,21 @@ Return ONLY a valid JSON array matching this schema:
           verified: true,
           verificationStatus: 'VERIFIED',
         });
+
+        // Enforce storage isolation: save newly generated data using unique naming convention
+        try {
+          const storageDir = path.join(process.cwd(), 'storage', 'generated_assessments');
+          if (!fs.existsSync(storageDir)) {
+            fs.mkdirSync(storageDir, { recursive: true });
+          }
+          const safeTopic = (topics[0] || subject || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 30);
+          const safeDifficulty = 'mixed';
+          const filename = `${safeTopic}_${safeDifficulty}_${Date.now()}.json`;
+          fs.writeFileSync(path.join(storageDir, filename), JSON.stringify(generatedAsm, null, 2), 'utf-8');
+          console.log(`[Storage Isolation] Saved freshly generated assessment to: ${filename}`);
+        } catch (saveErr) {
+          console.warn('[Storage Isolation] Could not persist assessment JSON:', saveErr);
+        }
 
         return res.json({
           success: true,

@@ -115,7 +115,8 @@ export interface AssessmentQuestion {
   question: string;
   type?: string; // e.g. 'MCQ' | 'Short Answer Question' | 'Long Answer Question'
   questionType?: string; // e.g. 'MCQ' | 'Short Answer Question' | 'Long Answer Question'
-  options: {
+  options: any;
+  optionsObj?: {
     A: string;
     B: string;
     C: string;

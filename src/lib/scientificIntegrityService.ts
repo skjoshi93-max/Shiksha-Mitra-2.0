@@ -593,7 +593,9 @@ export function sanitizeQuestionObject<T extends Record<string, any>>(q: T): T {
     cloned.text = normalizeScientificContent(cloned.text);
   }
 
-  if (cloned.options && typeof cloned.options === 'object') {
+  if (typeof cloned.options === 'string') {
+    cloned.options = normalizeScientificContent(cloned.options);
+  } else if (cloned.options && typeof cloned.options === 'object') {
     const newOptions: Record<string, string> = {};
     for (const [key, val] of Object.entries(cloned.options)) {
       newOptions[key] = typeof val === 'string' ? normalizeScientificContent(val) : (val as string);

@@ -4,6 +4,7 @@
  */
 
 export * from './scientificIntegrityService';
+export * from './legacyDataMigration';
 import { normalizeScientificContent } from './scientificIntegrityService';
 
 // Backwards-compatible alias for existing components

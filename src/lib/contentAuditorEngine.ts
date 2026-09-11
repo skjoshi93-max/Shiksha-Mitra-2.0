@@ -27,6 +27,11 @@ import {
   cleanEscapedBackslashes,
   sanitizeQuestionObject,
 } from './mathSanitizer';
+import {
+  migrateLegacyMcqRecord,
+  extractCleanAnswerLetter,
+  stripLeadingOptionLabel
+} from './legacyDataMigration';
 import { validateScientificContent } from './scientificIntegrityService';
 import { isBannedPlaceholderText, AIContentIntegrityService } from './aiContentIntegrityService';
 
@@ -75,7 +80,7 @@ export function enforceRigidQuestionSchema(rawItem: any, context: AuditContext =
     return { valid: false, sanitized: null, corrections: [], reason: 'Null or non-object item' };
   }
 
-  const clean = sanitizeQuestionObject(rawItem);
+  let clean = migrateLegacyMcqRecord(sanitizeQuestionObject(rawItem));
   let qText = (clean.question || clean.text || '').trim();
   const rawType = String(clean.questionType || clean.type || 'MCQ').trim();
   const typeLower = rawType.toLowerCase();
@@ -135,23 +140,51 @@ export function enforceRigidQuestionSchema(rawItem: any, context: AuditContext =
       }));
     }
   } else if (typeLower.includes('short') || typeLower.includes('long') || typeLower.includes('descriptive') || typeLower.includes('one word')) {
-    // Subjective question
+    // Subjective question (SAQ / LAQ) - options MUST remain a clean empty string ("")
     clean.type = typeLower.includes('long') ? 'LONG_ANSWER' : typeLower.includes('one word') ? 'ONE_WORD' : 'SHORT_ANSWER';
+    clean.options = '';
+    clean.optionA = '';
+    clean.option_a = '';
+    clean.optionB = '';
+    clean.option_b = '';
+    clean.optionC = '';
+    clean.option_c = '';
+    clean.optionD = '';
+    clean.option_d = '';
+    clean.optionsObj = { A: '', B: '', C: '', D: '' };
   } else {
     // Standard 4-Option MCQ
     clean.type = 'MCQ';
     clean.questionType = clean.questionType || 'MCQ';
 
-    let optA = clean.options?.A || clean.optionA || clean.option_a || '';
-    let optB = clean.options?.B || clean.optionB || clean.option_b || '';
-    let optC = clean.options?.C || clean.optionC || clean.option_c || '';
-    let optD = clean.options?.D || clean.optionD || clean.option_d || '';
+    let optA = '';
+    let optB = '';
+    let optC = '';
+    let optD = '';
 
-    // Standardize LaTeX in options
-    optA = sanitizeMathAndChemistryText(String(optA));
-    optB = sanitizeMathAndChemistryText(String(optB));
-    optC = sanitizeMathAndChemistryText(String(optC));
-    optD = sanitizeMathAndChemistryText(String(optD));
+    if (typeof clean.options === 'string' && clean.options.includes('|')) {
+      const parts = clean.options.split('|').map((s: string) => s.trim()).filter(Boolean);
+      optA = parts[0] || '';
+      optB = parts[1] || '';
+      optC = parts[2] || '';
+      optD = parts[3] || '';
+    } else if (clean.options && typeof clean.options === 'object') {
+      optA = clean.options?.A || clean.optionA || clean.option_a || '';
+      optB = clean.options?.B || clean.optionB || clean.option_b || '';
+      optC = clean.options?.C || clean.optionC || clean.option_c || '';
+      optD = clean.options?.D || clean.optionD || clean.option_d || '';
+    } else {
+      optA = clean.optionA || clean.option_a || '';
+      optB = clean.optionB || clean.option_b || '';
+      optC = clean.optionC || clean.option_c || '';
+      optD = clean.optionD || clean.option_d || '';
+    }
+
+    // Standardize LaTeX in options and strip leading labels
+    optA = sanitizeMathAndChemistryText(stripLeadingOptionLabel(String(optA)));
+    optB = sanitizeMathAndChemistryText(stripLeadingOptionLabel(String(optB)));
+    optC = sanitizeMathAndChemistryText(stripLeadingOptionLabel(String(optC)));
+    optD = sanitizeMathAndChemistryText(stripLeadingOptionLabel(String(optD)));
 
     // Distractor validation: check for empty options
     if (!optA || !optB) {
@@ -166,7 +199,10 @@ export function enforceRigidQuestionSchema(rawItem: any, context: AuditContext =
       corrections.push('Supplied missing option D');
     }
 
-    clean.options = { A: optA, B: optB, C: optC, D: optD };
+    // The options field MUST contain exactly 4 choices separated strictly by a pipe character with padding spaces
+    const pipedOptions = `${optA} | ${optB} | ${optC} | ${optD}`;
+    clean.options = pipedOptions;
+    clean.optionsObj = { A: optA, B: optB, C: optC, D: optD };
     clean.optionA = optA;
     clean.option_a = optA;
     clean.optionB = optB;
@@ -176,16 +212,8 @@ export function enforceRigidQuestionSchema(rawItem: any, context: AuditContext =
     clean.optionD = optD;
     clean.option_d = optD;
 
-    // Check answer key
-    let ans = String(clean.correctAnswer || clean.answer || 'A').trim().toUpperCase();
-    if (!['A', 'B', 'C', 'D'].includes(ans)) {
-      if (ans.startsWith('A') || ans === optA) ans = 'A';
-      else if (ans.startsWith('B') || ans === optB) ans = 'B';
-      else if (ans.startsWith('C') || ans === optC) ans = 'C';
-      else if (ans.startsWith('D') || ans === optD) ans = 'D';
-      else ans = 'A';
-      corrections.push(`Standardized answer key indicator to '${ans}'`);
-    }
+    // Check answer key - strictly single capital letter 'A', 'B', 'C', or 'D'
+    const ans = extractCleanAnswerLetter(clean.correctAnswer || clean.answer || 'A', [optA, optB, optC, optD]);
     clean.correctAnswer = ans;
     clean.answer = ans;
   }

@@ -4,7 +4,13 @@ import { DEFAULT_SETTINGS } from './constants';
 import { DEMO_ASSESSMENTS, generateAll69Assessments } from './assessmentConstants';
 import { CLASS_6_POORVI_BOOK, VERIFIED_POORVI_SOLUTIONS } from './verifiedSolutionsData';
 import { cleanLatexToPlainMath } from './unifiedQuestionExport';
-import { sanitizeQuestionObject, sanitizeAssessmentObject, sanitizeMathAndChemistryText } from './mathSanitizer';
+import {
+  sanitizeQuestionObject,
+  sanitizeAssessmentObject,
+  sanitizeMathAndChemistryText,
+  migrateLegacyAssessmentRecord,
+  migrateLegacyMcqRecord,
+} from './mathSanitizer';
 
 export type { NcertBook, NcertQuestion, DailyExportFile, ChapterThumbnailRecord };
 
@@ -318,7 +324,9 @@ export async function getAllAssessments(): Promise<Assessment[]> {
     const db = await getDB();
     const tombstones = await getTombstonesForEntity('assessments');
     const assessments = await db.getAll('assessments');
-    const clean = (assessments || []).filter(a => a && a.id && !tombstones.has(a.id));
+    const clean = (assessments || [])
+      .filter(a => a && a.id && !tombstones.has(a.id))
+      .map(a => migrateLegacyAssessmentRecord(a));
     return clean;
   } catch (error) {
     console.error('Error fetching assessments from IndexedDB:', error);
@@ -328,7 +336,8 @@ export async function getAllAssessments(): Promise<Assessment[]> {
 
 export async function saveAssessment(assessment: Assessment): Promise<void> {
   const db = await getDB();
-  const cleanAsm = sanitizeAssessmentObject(assessment);
+  const migrated = migrateLegacyAssessmentRecord(assessment);
+  const cleanAsm = sanitizeAssessmentObject(migrated);
   await db.put('assessments', cleanAsm);
   if (cleanAsm.id) {
     await removeTombstone('assessments', cleanAsm.id);
@@ -365,7 +374,8 @@ export async function repairMathFormulasInExistingDb(): Promise<void> {
     let questionsUpdated = 0;
     for (const q of questions) {
       if (q) {
-        const sanitized = sanitizeQuestionObject(q);
+        const migrated = migrateLegacyMcqRecord(q);
+        const sanitized = sanitizeQuestionObject(migrated);
         // Compare serialized or key fields
         if (JSON.stringify(sanitized) !== JSON.stringify(q)) {
           await questionsStore.put(sanitized);
@@ -386,7 +396,8 @@ export async function repairMathFormulasInExistingDb(): Promise<void> {
       let ncertUpdated = 0;
       for (const nq of ncertQuestions) {
         if (nq) {
-          const sanitized = sanitizeQuestionObject(nq);
+          const migrated = migrateLegacyMcqRecord(nq);
+          const sanitized = sanitizeQuestionObject(migrated);
           if (JSON.stringify(sanitized) !== JSON.stringify(nq)) {
             await ncertStore.put(sanitized);
             ncertUpdated++;
@@ -406,7 +417,8 @@ export async function repairMathFormulasInExistingDb(): Promise<void> {
     let assessmentsUpdated = 0;
     for (const asm of assessments) {
       if (asm) {
-        const sanitized = sanitizeAssessmentObject(asm);
+        const migrated = migrateLegacyAssessmentRecord(asm);
+        const sanitized = sanitizeAssessmentObject(migrated);
         if (JSON.stringify(sanitized) !== JSON.stringify(asm)) {
           await assessmentsStore.put(sanitized);
           assessmentsUpdated++;

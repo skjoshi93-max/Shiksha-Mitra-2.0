@@ -8,6 +8,7 @@ import {
   sanitizeQuestionObject,
   sanitizeAssessmentObject
 } from './scientificIntegrityService';
+import { migrateLegacyMcqRecord, extractCleanAnswerLetter } from './legacyDataMigration';
 
 // ============================================================================
 // LOCKED SCHEMAS (ABSOLUTE MASTER TEMPLATES)
@@ -327,6 +328,14 @@ export function formatSkillAssessmentOptions(opts: any, q?: any): string {
     parts = list.map(item => stripLeadingOptionLabel(String(item))).filter(Boolean);
   }
 
+  // Fallback: If parts is still empty and answer contained pipe-separated options
+  if (parts.length === 0 && q && typeof q === 'object') {
+    const rawAns = String((q as any).answer || (q as any).correctAnswer || '');
+    if (rawAns.includes('|')) {
+      parts = rawAns.split('|').map(item => stripLeadingOptionLabel(item.trim())).filter(Boolean);
+    }
+  }
+
   return parts.join(' | ');
 }
 
@@ -468,7 +477,8 @@ export function exportAssessmentQuestionsToXLSX(
   }
 
   const rows = questions.map(rawQ => {
-    const q = sanitizeQuestionObject(rawQ);
+    const migratedQ = migrateLegacyMcqRecord(rawQ);
+    const q = sanitizeQuestionObject(migratedQ);
 
     const type = (q as any).type || q.questionType || 'MCQ';
     const normType = String(type).toLowerCase().trim();
@@ -482,8 +492,7 @@ export function exportAssessmentQuestionsToXLSX(
 
     const questionText = q.question || (q as any).text || '';
 
-    // The "answer" column should safely hold the AI's reference answer key or grading criteria.
-    let answer = (q as any).answer || '';
+    let answer = '';
     if (isSaq || isLaq) {
       answer =
         (q as any).referenceAnswer ||
@@ -496,7 +505,8 @@ export function exportAssessmentQuestionsToXLSX(
         q.correctAnswer ||
         '';
     } else {
-      answer = (q as any).answer || q.correctAnswer || '';
+      // For MCQ: Answer field MUST strictly contain only a single correct capital letter (e.g. "A", "B", "C", or "D")
+      answer = extractCleanAnswerLetter((q as any).answer || q.correctAnswer || 'A', optionsStr);
     }
 
     const marks = (q as any).marks !== undefined ? (q as any).marks : (q.maxScore !== undefined ? q.maxScore : (isLaq ? 5 : isSaq ? 3 : 1));
@@ -533,7 +543,8 @@ export function buildSkillAssessmentCSV(assessmentOrQuestions: Assessment | any)
   const schema = MASTER_SCHEMAS.skill_assessment;
   const headers = [...schema.headers];
   const rows = questions.map(rawQ => {
-    const q = sanitizeQuestionObject(rawQ);
+    const migratedQ = migrateLegacyMcqRecord(rawQ);
+    const q = sanitizeQuestionObject(migratedQ);
     const type = (q as any).type || q.questionType || 'MCQ';
     const normType = String(type).toLowerCase().trim();
     const isSaq = normType.includes('short answer') || normType === 'saq' || normType.includes('short');
@@ -543,7 +554,7 @@ export function buildSkillAssessmentCSV(assessmentOrQuestions: Assessment | any)
     const optionsStr = isSaqOrLaq ? '' : formatSkillAssessmentOptions(q.options, q);
     const questionText = q.question || (q as any).text || '';
 
-    let answer = (q as any).answer || '';
+    let answer = '';
     if (isSaq || isLaq) {
       answer =
         (q as any).referenceAnswer ||
@@ -556,7 +567,8 @@ export function buildSkillAssessmentCSV(assessmentOrQuestions: Assessment | any)
         q.correctAnswer ||
         '';
     } else {
-      answer = (q as any).answer || q.correctAnswer || '';
+      // For MCQ: Answer field MUST strictly contain only a single correct capital letter (e.g. "A", "B", "C", or "D")
+      answer = extractCleanAnswerLetter((q as any).answer || q.correctAnswer || 'A', optionsStr);
     }
 
     const marks = (q as any).marks !== undefined ? (q as any).marks : (q.maxScore !== undefined ? q.maxScore : (isLaq ? 5 : isSaq ? 3 : 1));

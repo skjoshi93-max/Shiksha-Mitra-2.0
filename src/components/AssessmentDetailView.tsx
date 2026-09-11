@@ -27,6 +27,11 @@ import { exportAssessmentQuestionsToCSV } from '../lib/unifiedQuestionExport';
 import { MathRenderer } from './academic/MathRenderer';
 import { CoursePlayerWorkspace } from './certification/CoursePlayerWorkspace';
 import { QuestionTypeBadge } from './QuestionTypeBadge';
+import {
+  migrateLegacyMcqRecord,
+  stripLeadingOptionLabel,
+  extractCleanAnswerLetter,
+} from '../lib/legacyDataMigration';
 
 const formatDateDisplay = (dateString: string) => {
   try {
@@ -42,12 +47,45 @@ const formatDateDisplay = (dateString: string) => {
   }
 };
 
+export function getQuestionOptionsList(rawQ: any): { key: 'A' | 'B' | 'C' | 'D'; label: string; text: string }[] {
+  const q = migrateLegacyMcqRecord(rawQ);
+  let rawList: string[] = [];
+
+  if (typeof q.options === 'string' && q.options.trim()) {
+    rawList = q.options.split('|').map((s: string) => stripLeadingOptionLabel(s.trim())).filter(Boolean);
+  } else if (Array.isArray(q.options)) {
+    rawList = q.options.map((s: any) => stripLeadingOptionLabel(String(s).trim())).filter(Boolean);
+  } else if (q.options && typeof q.options === 'object') {
+    const a = q.options.A || q.options.a || (q as any).optionA || '';
+    const b = q.options.B || q.options.b || (q as any).optionB || '';
+    const c = q.options.C || q.options.c || (q as any).optionC || '';
+    const d = q.options.D || q.options.d || (q as any).optionD || '';
+    rawList = [a, b, c, d].map((s: any) => stripLeadingOptionLabel(String(s).trim())).filter(Boolean);
+  }
+
+  if (rawList.length === 0) {
+    const a = (q as any).optionA || (q as any).option_a || '';
+    const b = (q as any).optionB || (q as any).option_b || '';
+    const c = (q as any).optionC || (q as any).option_c || '';
+    const d = (q as any).optionD || (q as any).option_d || '';
+    const cand = [a, b, c, d].map(s => stripLeadingOptionLabel(String(s).trim())).filter(Boolean);
+    if (cand.length > 0) rawList = cand;
+  }
+
+  const keys: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
+  return keys.map((key, idx) => ({
+    key,
+    label: key,
+    text: rawList[idx] || '',
+  }));
+}
+
 interface AssessmentDetailViewProps {
   assessment: Assessment;
   onBack: () => void;
   onUpdateAssessment: (updated: Assessment) => void;
-  onOpenTeacherTest: (asm: Assessment) => void;
-  onOpenEditForm: (asm: Assessment) => void;
+  onOpenTeacherTest?: (asm: Assessment) => void;
+  onOpenEditForm?: (asm: Assessment) => void;
 }
 
 export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
@@ -214,8 +252,54 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
     }
   };
 
-  const handleSaveQuestionEdit = (q: AssessmentQuestion) => {
-    const updatedQuestions = assessment.questions.map(item => (item.id === q.id ? q : item));
+  const startEditingQuestion = (targetQ: AssessmentQuestion) => {
+    const opts = getQuestionOptionsList(targetQ);
+    const optsObj = {
+      A: opts.find(o => o.key === 'A')?.text || '',
+      B: opts.find(o => o.key === 'B')?.text || '',
+      C: opts.find(o => o.key === 'C')?.text || '',
+      D: opts.find(o => o.key === 'D')?.text || '',
+    };
+    const cleanAns = extractCleanAnswerLetter(
+      targetQ.correctAnswer || targetQ.answer || 'A',
+      [optsObj.A, optsObj.B, optsObj.C, optsObj.D]
+    );
+    setEditingQuestion({
+      ...targetQ,
+      options: optsObj as any,
+      correctAnswer: cleanAns as any,
+      answer: cleanAns,
+    });
+  };
+
+  const handleSaveQuestionEdit = (qToSave: AssessmentQuestion) => {
+    const normType = String(qToSave.type || qToSave.questionType || '').toLowerCase().trim();
+    const isSaqOrLaq = normType.includes('short answer') || normType === 'saq' || normType.includes('long answer') || normType === 'laq' || normType.includes('essay');
+
+    let updatedQ: AssessmentQuestion;
+    if (isSaqOrLaq) {
+      updatedQ = {
+        ...qToSave,
+        options: '' as any,
+      };
+    } else {
+      const rawOpts = (qToSave.options && typeof qToSave.options === 'object') ? qToSave.options : { A: '', B: '', C: '', D: '' };
+      const optA = stripLeadingOptionLabel(String(rawOpts.A || ''));
+      const optB = stripLeadingOptionLabel(String(rawOpts.B || ''));
+      const optC = stripLeadingOptionLabel(String(rawOpts.C || ''));
+      const optD = stripLeadingOptionLabel(String(rawOpts.D || ''));
+      const piped = `${optA} | ${optB} | ${optC} | ${optD}`;
+      const cleanAns = extractCleanAnswerLetter(qToSave.correctAnswer || qToSave.answer || 'A', [optA, optB, optC, optD]);
+      updatedQ = {
+        ...qToSave,
+        options: piped as any,
+        optionsObj: { A: optA, B: optB, C: optC, D: optD } as any,
+        correctAnswer: cleanAns as any,
+        answer: cleanAns,
+      };
+    }
+
+    const updatedQuestions = assessment.questions.map(item => (item.id === updatedQ.id ? updatedQ : item));
     onUpdateAssessment({
       ...assessment,
       questions: updatedQuestions,
@@ -234,28 +318,6 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
         >
           <ArrowLeft className="h-4 w-4" /> Back to Assessments List
         </button>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowCoursePlayer(true)}
-            className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-indigo-600 to-sky-600 px-4 py-2 text-xs font-black text-white hover:from-rose-500 hover:to-sky-500 shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
-            title="Launch Interactive Video Course Player & PPT Presentation Workspace"
-          >
-            <PlayCircle className="h-4 w-4" /> Course Player Workspace (Video & PPT)
-          </button>
-          <button
-            onClick={() => onOpenTeacherTest(assessment)}
-            className="flex items-center gap-2 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 shadow-md shadow-emerald-600/30 transition-all"
-          >
-            <Award className="h-4 w-4" /> Take Teacher Certification Test
-          </button>
-          <button
-            onClick={() => onOpenEditForm(assessment)}
-            className="flex items-center gap-1.5 rounded-2xl border border-slate-200/80 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 transition-all"
-          >
-            <Edit3 className="h-4 w-4" /> Edit Metadata
-          </button>
-        </div>
       </div>
 
       {/* Assessment Hero Card Bento */}
@@ -423,7 +485,7 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
                     <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
                   </button>
                   <button
-                    onClick={() => setEditingQuestion(isEditing ? null : q)}
+                    onClick={() => (isEditing ? setEditingQuestion(null) : startEditingQuestion(q))}
                     className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 transition-all"
                     title="Edit question"
                   >
@@ -442,17 +504,21 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
               {/* Options Grid or Open-Ended Model Answer */}
               {(() => {
                 const normType = String(q.type || q.questionType || '').toLowerCase().trim();
-                const isSaqOrLaq = normType.includes('short answer') || normType === 'saq' || normType.includes('long answer') || normType === 'laq' || normType.includes('essay');
-                const hasValidOptions = q.options && (Boolean(q.options.A) || Boolean(q.options.B) || Boolean(q.options.C) || Boolean(q.options.D));
+                const isSaqOrLaq =
+                  normType.includes('short answer') ||
+                  normType === 'saq' ||
+                  normType.includes('long answer') ||
+                  normType === 'laq' ||
+                  normType.includes('essay');
 
-                if (isSaqOrLaq || !hasValidOptions) {
+                if (isSaqOrLaq) {
                   return (
                     <div className="ml-8 rounded-2xl border border-emerald-200/80 bg-emerald-50/50 p-3.5 text-xs dark:border-emerald-900/60 dark:bg-emerald-950/20 text-emerald-900 dark:text-emerald-200">
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="font-bold text-emerald-800 dark:text-emerald-300 uppercase text-[10px] tracking-wider">
                           Model Answer & Evaluation Rubric:
                         </span>
-                        <QuestionTypeBadge type={q.type || q.questionType || (isSaqOrLaq ? 'Short Answer Question' : 'Open-Ended')} />
+                        <QuestionTypeBadge type={q.type || q.questionType || 'Short Answer Question'} />
                       </div>
                       <div className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
                         <MathRenderer text={q.answer || q.correctAnswer || q.explanation || 'Direct pedagogical reference response & grading criteria.'} />
@@ -461,20 +527,70 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
                   );
                 }
 
+                // MCQ / Multiple Choice: safely extract options using legacy fallback parser
+                const optionsList = getQuestionOptionsList(q);
+                const cleanAnsLetter = extractCleanAnswerLetter(
+                  q.correctAnswer || q.answer || '',
+                  optionsList.map(o => o.text)
+                );
+                const hasSufficientOptions = optionsList.filter(o => o.text.trim().length > 0).length >= 2;
+
+                if (!hasSufficientOptions) {
+                  return (
+                    <div className="ml-8 rounded-2xl border border-amber-200/80 bg-amber-50/70 p-3.5 text-xs dark:border-amber-900/60 dark:bg-amber-950/20 text-amber-900 dark:text-amber-200">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-amber-800 dark:text-amber-300 uppercase text-[10px] tracking-wider">
+                          Notice: Incomplete MCQ Options
+                        </span>
+                        <QuestionTypeBadge type={q.type || q.questionType || 'MCQ'} />
+                      </div>
+                      <p className="text-xs text-slate-700 dark:text-slate-300">
+                        Options could not be automatically formatted for this question. Click <strong>Edit</strong> to supply choices.
+                      </p>
+                    </div>
+                  );
+                }
+
                 return (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium pl-8">
-                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'A' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                      A. <MathRenderer text={q.options.A} /> {q.correctAnswer === 'A' && '✓ (Correct)'}
-                    </div>
-                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'B' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                      B. <MathRenderer text={q.options.B} /> {q.correctAnswer === 'B' && '✓ (Correct)'}
-                    </div>
-                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'C' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                      C. <MathRenderer text={q.options.C} /> {q.correctAnswer === 'C' && '✓ (Correct)'}
-                    </div>
-                    <div className={`p-2.5 rounded-2xl border ${q.correctAnswer === 'D' ? 'border-emerald-500 bg-emerald-50/80 font-bold text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200' : 'border-slate-200/60 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300'}`}>
-                      D. <MathRenderer text={q.options.D} /> {q.correctAnswer === 'D' && '✓ (Correct)'}
-                    </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-medium pl-8">
+                    {optionsList.map(opt => {
+                      const isCorrect = cleanAnsLetter === opt.key;
+                      return (
+                        <label
+                          key={opt.key}
+                          className={`flex items-start gap-2.5 p-3 rounded-2xl border transition-all cursor-pointer select-none ${
+                            isCorrect
+                              ? 'border-emerald-500 bg-emerald-50/90 font-bold text-emerald-950 dark:border-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-100 shadow-xs'
+                              : 'border-slate-200/80 bg-white/70 hover:bg-slate-50/80 dark:border-slate-800 dark:bg-slate-800/40 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <div className="pt-0.5 shrink-0 flex items-center">
+                            <input
+                              type="radio"
+                              name={`question-radio-${q.id}`}
+                              checked={isCorrect}
+                              readOnly
+                              className="h-3.5 w-3.5 text-emerald-600 border-slate-300 focus:ring-emerald-500"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <span
+                              className={`inline-block mr-1 font-bold ${
+                                isCorrect ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400'
+                              }`}
+                            >
+                              {opt.key}.
+                            </span>
+                            <MathRenderer text={opt.text} />
+                            {isCorrect && (
+                              <span className="ml-1.5 inline-flex items-center text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                ✓ (Correct Answer)
+                              </span>
+                            )}
+                          </div>
+                        </label>
+                      );
+                    })}
                   </div>
                 );
               })()}
@@ -497,44 +613,110 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
                     onChange={e => setEditingQuestion({ ...editingQuestion, question: e.target.value })}
                     className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                   />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={editingQuestion.options.A}
-                      onChange={e => setEditingQuestion({ ...editingQuestion, options: { ...editingQuestion.options, A: e.target.value } })}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={editingQuestion.options.B}
-                      onChange={e => setEditingQuestion({ ...editingQuestion, options: { ...editingQuestion.options, B: e.target.value } })}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={editingQuestion.options.C}
-                      onChange={e => setEditingQuestion({ ...editingQuestion, options: { ...editingQuestion.options, C: e.target.value } })}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
-                    <input
-                      type="text"
-                      value={editingQuestion.options.D}
-                      onChange={e => setEditingQuestion({ ...editingQuestion, options: { ...editingQuestion.options, D: e.target.value } })}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <select
-                      value={editingQuestion.correctAnswer}
-                      onChange={e => setEditingQuestion({ ...editingQuestion, correctAnswer: e.target.value as 'A'|'B'|'C'|'D' })}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-xs font-bold dark:border-slate-800 dark:bg-slate-900"
-                    >
-                      <option value="A">Correct: A</option>
-                      <option value="B">Correct: B</option>
-                      <option value="C">Correct: C</option>
-                      <option value="D">Correct: D</option>
-                    </select>
-                  </div>
+                  {(() => {
+                    const normType = String(editingQuestion.type || editingQuestion.questionType || '').toLowerCase().trim();
+                    const isSaqOrLaq =
+                      normType.includes('short answer') ||
+                      normType === 'saq' ||
+                      normType.includes('long answer') ||
+                      normType === 'laq' ||
+                      normType.includes('essay');
+
+                    if (isSaqOrLaq) {
+                      return (
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                            Model Answer & Evaluation Rubric:
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={editingQuestion.answer || editingQuestion.correctAnswer || ''}
+                            onChange={e =>
+                              setEditingQuestion({
+                                ...editingQuestion,
+                                answer: e.target.value,
+                                correctAnswer: e.target.value as any,
+                              })
+                            }
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                          />
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <>
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            placeholder="Option A"
+                            value={editingQuestion.options?.A || ''}
+                            onChange={e =>
+                              setEditingQuestion({
+                                ...editingQuestion,
+                                options: { ...((editingQuestion.options as any) || {}), A: e.target.value },
+                              })
+                            }
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Option B"
+                            value={editingQuestion.options?.B || ''}
+                            onChange={e =>
+                              setEditingQuestion({
+                                ...editingQuestion,
+                                options: { ...((editingQuestion.options as any) || {}), B: e.target.value },
+                              })
+                            }
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Option C"
+                            value={editingQuestion.options?.C || ''}
+                            onChange={e =>
+                              setEditingQuestion({
+                                ...editingQuestion,
+                                options: { ...((editingQuestion.options as any) || {}), C: e.target.value },
+                              })
+                            }
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Option D"
+                            value={editingQuestion.options?.D || ''}
+                            onChange={e =>
+                              setEditingQuestion({
+                                ...editingQuestion,
+                                options: { ...((editingQuestion.options as any) || {}), D: e.target.value },
+                              })
+                            }
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <select
+                            value={editingQuestion.correctAnswer || 'A'}
+                            onChange={e =>
+                              setEditingQuestion({
+                                ...editingQuestion,
+                                correctAnswer: e.target.value as 'A' | 'B' | 'C' | 'D',
+                                answer: e.target.value,
+                              })
+                            }
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-xs font-bold dark:border-slate-800 dark:bg-slate-900"
+                          >
+                            <option value="A">Correct: A</option>
+                            <option value="B">Correct: B</option>
+                            <option value="C">Correct: C</option>
+                            <option value="D">Correct: D</option>
+                          </select>
+                        </div>
+                      </>
+                    );
+                  })()}
                   <input
                     type="text"
                     value={editingQuestion.explanation}
