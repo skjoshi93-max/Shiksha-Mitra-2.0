@@ -10,6 +10,7 @@ import { AIGeneratorView } from './components/AIGeneratorView';
 import { QuestionBankView } from './components/QuestionBankView';
 import { SettingsView } from './components/SettingsView';
 import { SkillAssessmentsView } from './components/SkillAssessmentsView';
+import { SkillCertificationView } from './components/SkillCertificationView';
 import { NcertPdfModule } from './components/NcertPdfModule';
 import { QuestionModal } from './components/QuestionModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -37,9 +38,10 @@ function parseTabFromHash(hash: string): NavTab | null {
   const clean = hash.replace(/^#/, '');
   if (clean === 'dashboard') return 'dashboard';
   if (clean === 'generator') return 'generator';
+  if (clean === 'csv-generator' || clean === 'ncert-pdf') return 'csv-generator';
   if (clean === 'bank') return 'bank';
   if (clean === 'assessments') return 'assessments';
-  if (clean === 'ncert-pdf') return 'ncert-pdf';
+  if (clean === 'certification' || clean === 'skill-certification') return 'certification';
   if (clean === 'settings') return 'settings';
   return null;
 }
@@ -213,97 +215,98 @@ export default function App() {
   const activeQuestionsCount = questions.filter(q => q.active).length;
 
   return (
-    <div className="min-h-screen canvas-3d-bg font-sans text-slate-900 dark:text-slate-100 p-2 sm:p-4 lg:p-6 flex flex-col justify-center selection:bg-purple-500 selection:text-white">
-      {/* Outer 3D Shell Container */}
-      <div className="shell-3d rounded-[28px] sm:rounded-[36px] max-w-[1600px] w-full mx-auto flex flex-col min-h-[calc(100vh-2rem)] sm:min-h-[calc(100vh-3rem)] overflow-hidden relative">
-        <div className="flex flex-1 overflow-hidden">
-          {/* 3D Floating Sidebar */}
-          <Sidebar
-            activeTab={activeTab}
-            onTabChange={(tab) => {
-              setActiveTab(tab);
-              setPresetCount(undefined);
+    <div className="h-screen w-screen overflow-hidden flex bg-slate-100/70 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 selection:bg-slate-700 selection:text-white">
+      {/* 1. Locked Left Sidebar (Height: 100vh, Static Width) */}
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setPresetCount(undefined);
+        }}
+        questionCount={questions.length}
+        bankName={settings.bankName}
+      />
+
+      {/* 2. Right Work Area (Firmly Locked Top Header, Independently Scrolling Content) */}
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden bg-slate-50/50 dark:bg-slate-950">
+        {/* Top Navbar / Dashboard Header locked at the top */}
+        <div className="shrink-0 sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+          <Header
+            settings={settings}
+            onUpdateSettings={(updated) => handleSaveSettings({ ...settings, ...updated })}
+            totalCount={questions.length}
+            activeCount={activeQuestionsCount}
+            searchQuery={searchQuery}
+            onSearchChange={(q) => {
+              setSearchQuery(q);
+              if (activeTab !== 'bank') setActiveTab('bank');
             }}
-            questionCount={questions.length}
-            bankName={settings.bankName}
+            saveStatus={saveStatus}
+            onClearAllData={handleClearAllData}
+            onOpenGenerator={() => {
+              setPresetCount(100);
+              setActiveTab('generator');
+            }}
           />
-
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-            {/* Header */}
-            <Header
-              settings={settings}
-              onUpdateSettings={(updated) => handleSaveSettings({ ...settings, ...updated })}
-              totalCount={questions.length}
-              activeCount={activeQuestionsCount}
-              searchQuery={searchQuery}
-              onSearchChange={(q) => {
-                setSearchQuery(q);
-                if (activeTab !== 'bank') setActiveTab('bank');
-              }}
-              saveStatus={saveStatus}
-              onClearAllData={handleClearAllData}
-              onOpenGenerator={() => {
-                setPresetCount(100);
-                setActiveTab('generator');
-              }}
-            />
-
-            {/* View Containers */}
-            <main className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
-              <ErrorBoundary fallbackTitle="Workspace Safe Mode">
-                {activeTab === 'dashboard' && (
-                  <DashboardView
-                    questions={questions}
-                    onOpenGeneratorWithPreset={handleOpenGeneratorWithPreset}
-                    onNavigateToBankWithFilter={handleNavigateToBankWithFilter}
-                  />
-                )}
-
-                {activeTab === 'generator' && (
-                  <AIGeneratorView
-                    initialConfig={generatorConfig}
-                    existingQuestions={questions}
-                    onGenerationComplete={handleGenerationComplete}
-                    presetCount={presetCount}
-                  />
-                )}
-
-                {activeTab === 'bank' && (
-                  <QuestionBankView
-                    questions={questions}
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    onUpdateQuestion={handleUpdateQuestion}
-                    onDeleteQuestion={handleDeleteQuestion}
-                    onDeleteBatch={handleDeleteBatch}
-                    onDuplicateQuestion={handleDuplicateQuestion}
-                    onOpenQuestionModal={(q) => setSelectedQuestionModal(q)}
-                    onExportSelected={(selectedList) => downloadXLSX(selectedList)}
-                    initialFilter={initialBankFilter}
-                  />
-                )}
-
-                {activeTab === 'assessments' && (
-                  <SkillAssessmentsView />
-                )}
-
-                {activeTab === 'ncert-pdf' && (
-                  <NcertPdfModule />
-                )}
-
-                {activeTab === 'settings' && (
-                  <SettingsView
-                    settings={settings}
-                    onSaveSettings={handleSaveSettings}
-                    onExportBackup={handleExportBackup}
-                    onRestoreBackup={handleRestoreBackup}
-                  />
-                )}
-              </ErrorBoundary>
-            </main>
-          </div>
         </div>
+
+        {/* Independently Scrolling Main Content Container */}
+        <main className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 lg:p-8">
+          <ErrorBoundary fallbackTitle="Workspace Safe Mode">
+            {activeTab === 'dashboard' && (
+              <DashboardView
+                questions={questions}
+                onOpenGeneratorWithPreset={handleOpenGeneratorWithPreset}
+                onNavigateToBankWithFilter={handleNavigateToBankWithFilter}
+              />
+            )}
+
+            {activeTab === 'generator' && (
+              <AIGeneratorView
+                initialConfig={generatorConfig}
+                existingQuestions={questions}
+                onGenerationComplete={handleGenerationComplete}
+                presetCount={presetCount}
+              />
+            )}
+
+            {activeTab === 'bank' && (
+              <QuestionBankView
+                questions={questions}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                onUpdateQuestion={handleUpdateQuestion}
+                onDeleteQuestion={handleDeleteQuestion}
+                onDeleteBatch={handleDeleteBatch}
+                onDuplicateQuestion={handleDuplicateQuestion}
+                onOpenQuestionModal={(q) => setSelectedQuestionModal(q)}
+                onExportSelected={(selectedList) => downloadXLSX(selectedList)}
+                initialFilter={initialBankFilter}
+              />
+            )}
+
+            {activeTab === 'assessments' && (
+              <SkillAssessmentsView />
+            )}
+
+            {activeTab === 'certification' && (
+              <SkillCertificationView />
+            )}
+
+            {activeTab === 'csv-generator' && (
+              <NcertPdfModule />
+            )}
+
+            {activeTab === 'settings' && (
+              <SettingsView
+                settings={settings}
+                onSaveSettings={handleSaveSettings}
+                onExportBackup={handleExportBackup}
+                onRestoreBackup={handleRestoreBackup}
+              />
+            )}
+          </ErrorBoundary>
+        </main>
       </div>
 
       {/* Modal View */}

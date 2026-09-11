@@ -18,10 +18,14 @@ import {
   Eye,
   Zap,
   Calendar,
+  Video,
+  Presentation,
+  PlayCircle,
 } from 'lucide-react';
 import { Assessment, AssessmentQuestion, DifficultyLevel } from '../types';
 import { exportAssessmentQuestionsToCSV } from '../lib/unifiedQuestionExport';
 import { MathRenderer } from './academic/MathRenderer';
+import { CoursePlayerWorkspace } from './certification/CoursePlayerWorkspace';
 
 const formatDateDisplay = (dateString: string) => {
   try {
@@ -52,10 +56,21 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
   onOpenTeacherTest,
   onOpenEditForm,
 }) => {
+  const [showCoursePlayer, setShowCoursePlayer] = useState<boolean>(false);
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
   const [editingQuestion, setEditingQuestion] = useState<AssessmentQuestion | null>(null);
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [exportDropdownOpen, setExportDropdownOpen] = useState<boolean>(false);
+
+  if (showCoursePlayer) {
+    return (
+      <CoursePlayerWorkspace
+        assessment={assessment}
+        onBack={() => setShowCoursePlayer(false)}
+        onUpdateAssessment={onUpdateAssessment}
+      />
+    );
+  }
 
   const handleToggleSelectAll = () => {
     if (selectedQuestions.length === assessment.questions.length) {
@@ -220,6 +235,13 @@ export const AssessmentDetailView: React.FC<AssessmentDetailViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCoursePlayer(true)}
+            className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-indigo-600 to-sky-600 px-4 py-2 text-xs font-black text-white hover:from-rose-500 hover:to-sky-500 shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
+            title="Launch Interactive Video Course Player & PPT Presentation Workspace"
+          >
+            <PlayCircle className="h-4 w-4" /> Course Player Workspace (Video & PPT)
+          </button>
           <button
             onClick={() => onOpenTeacherTest(assessment)}
             className="flex items-center gap-2 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 shadow-md shadow-emerald-600/30 transition-all"

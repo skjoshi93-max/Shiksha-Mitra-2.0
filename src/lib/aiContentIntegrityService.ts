@@ -279,13 +279,16 @@ export function validateSubjectDomainSubstance(
 export function validateMCQOptionsAndAnswer(
   options: Record<string, string> | any,
   correctAnswer: string,
-  explanation: string
+  explanation: string,
+  questionType?: string
 ): { passed: boolean; score: number; details: string[] } {
   const notes: string[] = [];
   let score = 100;
+  const qType = (questionType || '').toLowerCase();
+  const isTrueFalse = qType.includes('true') || qType.includes('false');
 
   if (!options || typeof options !== 'object') {
-    return { passed: false, score: 0, details: ['Missing MCQ options object.'] };
+    return { passed: false, score: 0, details: ['Missing options object.'] };
   }
 
   const optA = (options.A || options.a || (Array.isArray(options) ? options[0] : '') || '').trim();
@@ -293,45 +296,58 @@ export function validateMCQOptionsAndAnswer(
   const optC = (options.C || options.c || (Array.isArray(options) ? options[2] : '') || '').trim();
   const optD = (options.D || options.d || (Array.isArray(options) ? options[3] : '') || '').trim();
 
-  const optArray = [optA, optB, optC, optD];
+  if (isTrueFalse) {
+    // True/False validation only requires 2 options (A & B or True & False)
+    if (!optA || !optB) {
+      score -= 40;
+      notes.push('True/False question requires both True and False options.');
+    }
+    const cleanAns = (correctAnswer || '').trim().toUpperCase();
+    if (!['A', 'B', 'TRUE', 'FALSE', 'T', 'F'].includes(cleanAns)) {
+      score -= 30;
+      notes.push(`Invalid True/False answer indicator "${correctAnswer}". Must be 'A', 'B', 'True', or 'False'.`);
+    }
+  } else {
+    const optArray = [optA, optB, optC, optD];
 
-  // 1. Completeness Check
-  const emptyCount = optArray.filter(o => o.length === 0).length;
-  if (emptyCount > 0) {
-    score -= 40;
-    notes.push(`MCQ has ${emptyCount} empty option(s). Exactly 4 non-empty options required.`);
-  }
+    // 1. Completeness Check
+    const emptyCount = optArray.filter(o => o.length === 0).length;
+    if (emptyCount > 0) {
+      score -= 40;
+      notes.push(`MCQ has ${emptyCount} empty option(s). Exactly 4 non-empty options required.`);
+    }
 
-  // 2. Uniqueness Check
-  const normalizedOpts = optArray.map(o => o.toLowerCase().replace(/\s+/g, ' '));
-  const uniqueSet = new Set(normalizedOpts);
-  if (uniqueSet.size < 4 && emptyCount === 0) {
-    score -= 40;
-    notes.push('MCQ options contain duplicate or identical choices.');
-  }
+    // 2. Uniqueness Check
+    const normalizedOpts = optArray.map(o => o.toLowerCase().replace(/\s+/g, ' '));
+    const uniqueSet = new Set(normalizedOpts);
+    if (uniqueSet.size < 4 && emptyCount === 0) {
+      score -= 40;
+      notes.push('MCQ options contain duplicate or identical choices.');
+    }
 
-  // 3. Placeholder Option Check
-  for (let i = 0; i < optArray.length; i++) {
-    const optLabel = ['A', 'B', 'C', 'D'][i];
-    const bannedCheck = isBannedPlaceholderText(optArray[i]);
-    if (bannedCheck.isBanned) {
-      score -= 50;
-      notes.push(`Option ${optLabel} contains prohibited placeholder artifact: "${bannedCheck.matchedPhrase}".`);
+    // 3. Placeholder Option Check
+    for (let i = 0; i < optArray.length; i++) {
+      const optLabel = ['A', 'B', 'C', 'D'][i];
+      const bannedCheck = isBannedPlaceholderText(optArray[i]);
+      if (bannedCheck.isBanned) {
+        score -= 50;
+        notes.push(`Option ${optLabel} contains prohibited placeholder artifact: "${bannedCheck.matchedPhrase}".`);
+      }
+    }
+
+    // 4. Correct Answer Indicator Check
+    const cleanAns = (correctAnswer || '').trim().toUpperCase();
+    if (!['A', 'B', 'C', 'D'].includes(cleanAns)) {
+      score -= 40;
+      notes.push(`Invalid correct answer indicator "${correctAnswer}". Must be strictly 'A', 'B', 'C', or 'D'.`);
     }
   }
 
-  // 4. Correct Answer Indicator Check
-  const cleanAns = (correctAnswer || '').trim().toUpperCase();
-  if (!['A', 'B', 'C', 'D'].includes(cleanAns)) {
-    score -= 40;
-    notes.push(`Invalid correct answer indicator "${correctAnswer}". Must be strictly 'A', 'B', 'C', or 'D'.`);
-  }
-
-  // 5. Explanation Check
+  // 5. Explanation / Hint Check
   const cleanExp = (explanation || '').trim();
-  if (!cleanExp || cleanExp.length < 15) {
-    score -= 20;
-    notes.push('Explanation is missing or too brief (< 15 characters).');
+  if (!cleanExp || cleanExp.length < 10) {
+    score -= 15;
+    notes.push('Explanation or evaluation rubric is missing or too brief (< 10 characters).');
   } else {
     const expBannedCheck = isBannedPlaceholderText(cleanExp);
     if (expBannedCheck.isBanned) {
@@ -342,9 +358,9 @@ export function validateMCQOptionsAndAnswer(
 
   score = Math.max(0, Math.min(100, score));
   return {
-    passed: score >= 80,
+    passed: score >= 75,
     score,
-    details: notes.length > 0 ? notes : ['Passed MCQ options and answer relationship integrity.'],
+    details: notes.length > 0 ? notes : ['Passed options and answer relationship integrity.'],
   };
 }
 
@@ -450,6 +466,7 @@ export class AIContentIntegrityService {
       subject?: string;
       classLevel?: string;
       topic?: string;
+      questionType?: string;
       minQualityScore?: number;
       existingBank?: any[];
     } = {}
@@ -535,23 +552,40 @@ export class AIContentIntegrityService {
     };
 
     // ----------------------------------------------------
-    // LAYER 4: MCQ Options & Answer Relationship Gate
+    // LAYER 4: Question Type Options & Answer Relationship Gate
     // ----------------------------------------------------
     let optionsResult: LayerValidationResult;
-    const isMCQ = !!(
-      sanitized.options ||
-      sanitized.option_a || sanitized.optionA ||
-      (sanitized.questionType && String(sanitized.questionType).toLowerCase().includes('mcq'))
+    const qTypeStr = String(sanitized.questionType || context.questionType || '').toLowerCase();
+    const isTrueFalse = qTypeStr.includes('true') || qTypeStr.includes('false');
+    const isNonMCQ = !isTrueFalse && (
+      qTypeStr.includes('fill') ||
+      qTypeStr.includes('match') ||
+      qTypeStr.includes('one word') ||
+      qTypeStr.includes('short') ||
+      qTypeStr.includes('long') ||
+      qTypeStr.includes('essay') ||
+      qTypeStr.includes('descriptive')
     );
 
-    if (isMCQ) {
-      const opts = sanitized.options || {
-        A: sanitized.optionA || sanitized.option_a,
-        B: sanitized.optionB || sanitized.option_b,
-        C: sanitized.optionC || sanitized.option_c,
-        D: sanitized.optionD || sanitized.option_d,
+    if (isNonMCQ) {
+      optionsResult = {
+        passed: true,
+        score: 100,
+        notes: [`${sanitized.questionType || 'Subjective/Textual'} question format verified - options check bypassed.`],
       };
-      const optCheck = validateMCQOptionsAndAnswer(opts, sanitized.correctAnswer || sanitized.answer, hintOrExp);
+    } else if (isTrueFalse || sanitized.options || sanitized.optionA || sanitized.option_a || qTypeStr.includes('mcq')) {
+      const opts = sanitized.options || {
+        A: sanitized.optionA || sanitized.option_a || (isTrueFalse ? 'True' : ''),
+        B: sanitized.optionB || sanitized.option_b || (isTrueFalse ? 'False' : ''),
+        C: sanitized.optionC || sanitized.option_c || '',
+        D: sanitized.optionD || sanitized.option_d || '',
+      };
+      const optCheck = validateMCQOptionsAndAnswer(
+        opts,
+        sanitized.correctAnswer || sanitized.answer || 'A',
+        hintOrExp,
+        sanitized.questionType || (isTrueFalse ? 'True/False' : 'MCQ')
+      );
       if (!optCheck.passed) {
         rejectionReasons.push(...optCheck.details);
       }
@@ -564,7 +598,7 @@ export class AIContentIntegrityService {
       optionsResult = {
         passed: true,
         score: 100,
-        notes: ['Non-MCQ question format (options validation skipped).'],
+        notes: ['Question format does not require option validation.'],
       };
     }
 

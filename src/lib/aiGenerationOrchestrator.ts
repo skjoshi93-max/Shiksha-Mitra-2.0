@@ -492,6 +492,11 @@ export async function executeResumableGeneration<T = any>(options: {
     completedItems: T[];
     offset: number;
   }) => Promise<{ items: T[]; rawModel?: string }>;
+  auditBatch?: (params: {
+    rawItems: T[];
+    model: string;
+    completedItems: T[];
+  }) => Promise<{ items: T[]; auditNotes?: string[] }>;
   validateItem: (item: T, existingItems: T[]) => { valid: boolean; sanitized: T; dedupKey: string; reason?: string };
   onProgress?: (progress: { completed: number; total: number; model: string; status: AiJobStatus }) => void;
 }): Promise<ResumableGenerationResult<T>> {
@@ -560,7 +565,26 @@ export async function executeResumableGeneration<T = any>(options: {
         offset: job.completedCount,
       });
 
-      const rawItems = Array.isArray(batchResult.items) ? batchResult.items : [];
+      let rawItems = Array.isArray(batchResult.items) ? batchResult.items : [];
+
+      // Pass 2: Senior Content Auditor & Self-Correction Pass (if auditBatch hook provided)
+      if (options.auditBatch && rawItems.length > 0) {
+        try {
+          console.log(`[AI Orchestrator] 🔍 Routing ${rawItems.length} items to Senior Content Auditor & Self-Correction Pass (Pass 2)...`);
+          const auditResult = await options.auditBatch({
+            rawItems,
+            model: activeModel,
+            completedItems: job.checkpointData,
+          });
+          if (Array.isArray(auditResult.items) && auditResult.items.length > 0) {
+            rawItems = auditResult.items;
+            console.log(`[AI Orchestrator] ✅ Senior Content Auditor successfully verified and sanitized ${rawItems.length} items.`);
+          }
+        } catch (auditErr: any) {
+          console.warn('[AI Orchestrator] Senior Content Auditor pass warning, proceeding with deterministic sanitization:', auditErr?.message || auditErr);
+        }
+      }
+
       let addedInBatch = 0;
 
       for (const raw of rawItems) {

@@ -37,6 +37,7 @@ import { AIAssessmentGeneratorModal } from './AIAssessmentGeneratorModal';
 import { AssessmentFormModal } from './AssessmentFormModal';
 import { AssessmentDetailView } from './AssessmentDetailView';
 import { TeacherTestRunnerModal } from './TeacherTestRunnerModal';
+import { CoursePlayerWorkspace } from './certification/CoursePlayerWorkspace';
 import {
   exportAssessmentToXLSX,
   exportAssessmentToCSV,
@@ -74,6 +75,7 @@ export const SkillAssessmentsView: React.FC = () => {
 
   const [activeDetailAssessment, setActiveDetailAssessment] = useState<Assessment | null>(null);
   const [activeTestAssessment, setActiveTestAssessment] = useState<Assessment | null>(null);
+  const [activeCoursePlayerAssessment, setActiveCoursePlayerAssessment] = useState<Assessment | null>(null);
 
   const [selectedAssessmentIds, setSelectedAssessmentIds] = useState<string[]>([]);
 
@@ -187,6 +189,17 @@ export const SkillAssessmentsView: React.FC = () => {
 
     return matchesSearch && matchesSubject && matchesStatus;
   });
+
+  // If Course Player Workspace is active
+  if (activeCoursePlayerAssessment) {
+    return (
+      <CoursePlayerWorkspace
+        assessment={activeCoursePlayerAssessment}
+        onBack={() => setActiveCoursePlayerAssessment(null)}
+        onUpdateAssessment={handleSaveAssessment}
+      />
+    );
+  }
 
   // If Detail View is active
   if (activeDetailAssessment) {
@@ -489,14 +502,30 @@ export const SkillAssessmentsView: React.FC = () => {
                     </td>
 
                     {/* Actions Column */}
-                    <td className="p-3.5 text-right align-top whitespace-nowrap">
+                    <td className="p-3.5 text-right align-top whitespace-nowrap space-x-2">
+                      <button
+                        onClick={() => setActiveCoursePlayerAssessment(asm)}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 px-3 py-1.5 text-xs font-black text-white hover:from-rose-500 hover:to-indigo-500 shadow-sm shadow-indigo-600/20 transition-all cursor-pointer"
+                        title="Launch Interactive Video Course Player & PPT Presentation"
+                      >
+                        <span>Course Player</span>
+                      </button>
+
+                      <button
+                        onClick={() => setActiveDetailAssessment(asm)}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:border-indigo-900/50 dark:text-indigo-300 transition-all cursor-pointer"
+                        title="View Assessment Details"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>Details</span>
+                      </button>
+
                       <button
                         onClick={() => handleDeleteAssessment(asm.id)}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 border border-rose-200 px-3 py-1.5 text-xs font-extrabold text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:border-rose-900/50 dark:text-rose-300 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1 rounded-xl bg-rose-50 border border-rose-200 px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100 dark:bg-rose-950/50 dark:border-rose-900/50 dark:text-rose-300 transition-all cursor-pointer"
                         title="Delete Assessment"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        <span>Delete</span>
                       </button>
                     </td>
                   </tr>

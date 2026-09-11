@@ -199,6 +199,8 @@ export interface NcertChapter {
   unitTitle?: string;
   pageStart: number;
   pageEnd: number;
+  pages?: number;
+  originalFileName?: string;
   contentHash: string;
   sourcePdfHash: string;
   status: 'PROCESSING' | 'READY' | 'ERROR';

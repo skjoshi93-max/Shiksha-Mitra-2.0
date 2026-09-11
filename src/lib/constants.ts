@@ -20,23 +20,34 @@ export const DEFAULT_SUBJECTS = [
   'General Knowledge',
 ];
 
+export const LOCKED_ALLOWED_QUESTION_TYPES = [
+  'Multiple Choice (MCQ)',
+  'Short Answer Questions (SAQ)',
+  'Long Answer Questions (LAQ)',
+  'Fill in the Blanks',
+  'True / False',
+  'One Word / Very Short Answer',
+  'Match the Following',
+  'Solve the Following (Math/Numerical special)',
+  'Assertion & Reason',
+  'Case-Based / Passage-Based Questions',
+  'Diagram / Graphical-Based Questions',
+  'Grammar & Comprehension',
+];
+
 export const DEFAULT_QUESTION_TYPES = [
-  'Conceptual',
-  'Practical',
-  'Scenario Based',
-  'Classroom Situation',
-  'Case Study',
-  'Problem Solving',
-  'Behavioral',
-  'Pedagogical',
-  'Subject Knowledge',
-  'Classroom Management',
-  'Student Psychology',
-  'Communication',
-  'Leadership',
-  'Inclusive Education',
-  'Assessment',
-  'Teaching Methodology',
+  'Multiple Choice (MCQ)',
+  'Short Answer Questions (SAQ)',
+  'Long Answer Questions (LAQ)',
+  'Fill in the Blanks',
+  'True / False',
+  'One Word / Very Short Answer',
+  'Match the Following',
+  'Solve the Following (Math/Numerical special)',
+  'Assertion & Reason',
+  'Case-Based / Passage-Based Questions',
+  'Diagram / Graphical-Based Questions',
+  'Grammar & Comprehension',
 ];
 
 export const DEFAULT_SHIKSHAMITRA_TEMPLATE: ShikshaMitraTemplate = {

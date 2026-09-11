@@ -42,10 +42,13 @@ import {
   updateDailyExportFileStatus,
 } from '../lib/db';
 import { LOCKED_CSV_FILENAMES } from '../lib/exportFilenameRegistry';
+import { LOCKED_ALLOWED_QUESTION_TYPES } from '../lib/constants';
 import { buildNcertPDFCSV } from '../lib/unifiedQuestionExport';
 import { ChapterThumbnailCard } from './ChapterThumbnailCard';
 import { InteractivePdfViewer } from './InteractivePdfViewer';
 import { DirectLocalUploadModal } from './DirectLocalUploadModal';
+import { SubjectBlueprintSelector } from './SubjectBlueprintSelector';
+import { getBlueprintQuestionTypesForSubject, detectSubjectCategory } from '../lib/subjectBlueprintMapping';
 
 export function cleanBookTitle(title: string | undefined | null): string {
   if (!title) return '';
@@ -60,7 +63,6 @@ const NCERT_PERSIST_BOOK_ID_KEY = 'shiksha_ncert_selected_book_id_v2';
 export const NcertPdfModule: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<string>(() => getSavedModelSelection());
   const [processingMode, setProcessingMode] = useState<ProcessingMode>(() => getSavedProcessingMode());
-  const [activeSubTab, setActiveSubTab] = useState<'library' | 'generator'>('library');
   const [books, setBooks] = useState<NcertBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -335,7 +337,7 @@ export const NcertPdfModule: React.FC = () => {
     bookId: '',
     scope: 'FULL_BOOK',
     chapterId: '',
-    questionTypes: ['MCQ', 'Short Answer', 'Fill in the Blanks'],
+    questionTypes: getBlueprintQuestionTypesForSubject('Mathematics'),
     difficulty: 'Mixed',
     marks: 1,
     numberOfQuestions: 10,
@@ -1352,12 +1354,12 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
         <div>
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-xl bg-white/80 border border-teal-300 text-teal-700 shadow-xs">
-              <BookOpen className="h-6 w-6" />
+              <FileSpreadsheet className="h-6 w-6" />
             </span>
             <h1
               className="text-2xl font-black tracking-tight text-slate-900"
             >
-              NCERT PDF Question Bank Generator
+              CSV Question Generator
             </h1>
             <span
               className="px-2.5 py-0.5 rounded-full text-xs font-black bg-teal-200/80 text-teal-900 border border-teal-300/60"
@@ -1366,364 +1368,28 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
             </span>
           </div>
           <p className="mt-1.5 text-sm text-slate-700 font-medium">
-            Upload official NCERT full-book PDFs, verify automated structure extraction, and generate rigorous CSV question banks.
+            Upload chapter PDFs or select curriculum textbooks to generate verified, syllabus-aligned CSV question banks.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button
-            id="btn-upload-new-ncert-book"
-            onClick={handleOpenNewUploadModal}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
+            id="btn-upload-chapter-pdf"
+            onClick={() => setIsDirectUploadOpen(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
           >
             <Upload className="h-4 w-4" />
-            Upload New NCERT Book
+            Upload Chapter PDF
           </button>
         </div>
       </div>
 
-      {/* Sub-Tabs Navigation */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6">
-        <button
-          onClick={() => setActiveSubTab('library')}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            activeSubTab === 'library'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400'
-          }`}
-        >
-          <BookMarked className="h-4 w-4" />
-          NCERT Book Library ({books.length})
-        </button>
-        <button
-          onClick={() => setActiveSubTab('generator')}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            activeSubTab === 'generator'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400'
-          }`}
-        >
-          <FileSpreadsheet className="h-4 w-4" />
-          CSV Question Generator
-        </button>
-      </div>
-
-      {/* SECTION 1: BOOK LIBRARY */}
-      {activeSubTab === 'library' && (
-        <div className="space-y-6">
-          {books.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs">
-              <BookOpen className="h-12 w-12 mx-auto text-slate-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">No books available. Please upload a book.</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 mb-6">
-                Upload your official NCERT textbook PDF or package to populate your synchronized curriculum library.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <button
-                  id="btn-empty-upload-book"
-                  onClick={handleOpenNewUploadModal}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 text-white font-bold text-xs shadow-md cursor-pointer hover:bg-indigo-700 transition-all"
-                >
-                  <Plus className="h-4 w-4" />
-                  Upload Book
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* COMPACT SELECTION & FILTER PANEL */}
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                <div className="flex flex-wrap items-end gap-6 justify-between">
-                  <div className="flex flex-wrap gap-5 flex-1 items-center">
-                    {/* Class Selector */}
-                    <div className="flex flex-col min-w-[160px]">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
-                        Select Class
-                      </label>
-                      <select
-                        id="ncert-library-class-select"
-                        value={currentClass}
-                        onChange={(e) => handleClassSelectChange(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer"
-                      >
-                        <option value="">-- Select Class --</option>
-                        {availableClasses.map((cls) => (
-                          <option key={cls} value={cls}>
-                            {cls}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Subject Selector */}
-                    <div className="flex flex-col min-w-[200px]">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
-                        Select Subject
-                      </label>
-                      <select
-                        id="ncert-library-subject-select"
-                        value={currentSubject}
-                        onChange={(e) => handleSubjectSelectChange(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!currentClass}
-                      >
-                        <option value="">-- Select Subject --</option>
-                        {availableSubjects.map((subj) => (
-                          <option key={subj} value={subj}>
-                            {subj}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Book Edition Selector - Universally visible across ALL subjects */}
-                    <div className="flex flex-col min-w-[200px]">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                          Book Edition
-                        </label>
-                        {matchingBooks.length > 1 && (
-                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-md border border-indigo-200/60">
-                            {matchingBooks.length} Editions
-                          </span>
-                        )}
-                      </div>
-                      <select
-                        id="ncert-library-edition-select"
-                        value={activeBook?.id || ''}
-                        onChange={(e) => handleBookEditionSelectChange(e.target.value)}
-                        disabled={matchingBooks.length === 0}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {matchingBooks.length === 0 ? (
-                          <option value="">-- No Edition Available --</option>
-                        ) : (
-                          matchingBooks.map((b) => (
-                            <option key={b.id} value={b.id}>
-                              {cleanBookTitle(b.bookTitle)}{b.edition && !/latest\s*ncert/i.test(b.edition) ? ` (${b.edition})` : ''}
-                            </option>
-                          ))
-                        )}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Active Selected Book Management Details */}
-                  {activeBook && (
-                    <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-3 border border-slate-100 dark:border-slate-800">
-                      <div className="text-left">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-xs font-black text-slate-900 dark:text-white line-clamp-1 max-w-[240px]">
-                            {activeBook.bookTitle}
-                          </h4>
-                          {(() => {
-                            const totalCh = activeBook.chapters?.length || 0;
-                            return (
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] font-black text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/80 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                  <Check className="h-3 w-3" /> {totalCh} Chapter{totalCh === 1 ? '' : 's'} Ready
-                                </span>
-                              </div>
-                            );
-                          })()}
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                          {activeBook.board} / {activeBook.publisher} • {activeBook.pageCount} pages • {(activeBook.fileSize / (1024 * 1024)).toFixed(1)} MB
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1.5 border-l border-slate-200 dark:border-slate-700 pl-3">
-                        <button
-                          onClick={() => handleOpenAppendChaptersModal(activeBook)}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
-                          title={`Upload remaining chapters to ${activeBook.bookTitle}`}
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                          <span>Upload Remaining</span>
-                        </button>
-                        <button
-                          onClick={() => handleOpenReplaceBookModal(activeBook)}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer"
-                          title={`Replace "${activeBook.bookTitle}" with new updated chapter files`}
-                        >
-                          <BookPlus className="h-3.5 w-3.5 text-indigo-500" />
-                          <span>Replace Book</span>
-                        </button>
-                        {(activeBook.status === 'PAUSED' || activeBook.status === 'PARTIAL') && (
-                          <button
-                            onClick={() => handleResumeJob(activeBook)}
-                            disabled={uploading}
-                            className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 text-amber-800 dark:text-amber-300 transition-all cursor-pointer"
-                            title="Resume AI Chapter Refinement"
-                          >
-                            <RefreshCw className={`h-4 w-4 ${uploading ? 'animate-spin' : ''}`} />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleArchiveBook(activeBook)}
-                          className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:text-amber-600 dark:hover:text-amber-400 text-slate-600 dark:text-slate-400 transition-all cursor-pointer"
-                          title="Archive Book"
-                        >
-                          <Archive className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteBook(activeBook.id)}
-                          className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:text-red-600 text-slate-600 dark:text-slate-400 transition-all cursor-pointer"
-                          title="Delete Book"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* UPLOADED PDF TEXTBOOK CHAPTER GRID TILES (STRICTLY FILTERED BY CLASS + SUBJECT + EDITION) */}
-              {(() => {
-                if (!activeBook) {
-                  return (
-                    <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs">
-                      <div className="p-3.5 bg-indigo-50 dark:bg-indigo-950/60 rounded-2xl w-fit mx-auto text-indigo-600 dark:text-indigo-400 mb-3">
-                        <BookOpen className="h-8 w-8" />
-                      </div>
-                      <h3 className="text-base font-black text-slate-800 dark:text-slate-200">
-                        No Textbook Found for {currentClass} • {currentSubject}
-                      </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 mb-6 leading-relaxed">
-                        Upload the official NCERT textbook PDF for this class and subject to view chapters, extract grounded questions, and view PDF pages.
-                      </p>
-                      <div className="flex flex-wrap items-center justify-center gap-3">
-                        <button
-                          onClick={handleOpenNewUploadModal}
-                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md cursor-pointer transition-all"
-                        >
-                          <Plus className="h-4 w-4" />
-                          Upload {currentSubject} Textbook
-                        </button>
-                      </div>
-                    </div>
-                  );
-                }
-
-                const parseChapterNo = (val: any): number => {
-                  if (typeof val === 'number') return val;
-                  const extracted = String(val || '').match(/\d+/);
-                  return extracted ? parseInt(extracted[0], 10) : 999;
-                };
-
-                const bookChapters = [...(activeBook.chapters || [])].sort((a, b) => {
-                  const numA = parseChapterNo(a.chapterNumber ?? a.chapterTitle ?? a.originalFileName);
-                  const numB = parseChapterNo(b.chapterNumber ?? b.chapterTitle ?? b.originalFileName);
-                  if (numA !== numB) return numA - numB;
-                  const titleA = (a.chapterTitle || a.originalFileName || a.fileName || '').toLowerCase();
-                  const titleB = (b.chapterTitle || b.originalFileName || b.fileName || '').toLowerCase();
-                  return titleA.localeCompare(titleB, undefined, { numeric: true, sensitivity: 'base' });
-                });
-
-                if (bookChapters.length === 0) {
-                  return (
-                    <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs">
-                      <BookOpen className="h-10 w-10 mx-auto text-slate-400 mb-3" />
-                      <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
-                        No chapter PDFs indexed for &ldquo;{cleanBookTitle(activeBook.bookTitle)}&rdquo;{activeBook.edition && !/latest\s*ncert/i.test(activeBook.edition) ? ` (${activeBook.edition})` : ''}
-                      </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-5">
-                        Upload chapter PDFs to populate chapters, view PDF pages, and generate grounded questions.
-                      </p>
-                      <button
-                        onClick={() => handleOpenAppendChaptersModal(activeBook)}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Upload Chapters to {cleanBookTitle(activeBook.bookTitle)}
-                      </button>
-                    </div>
-                  );
-                }
-
-                const visibleChapters = bookChapters.slice(0, visibleChapterLimit);
-                const hasMoreChapters = bookChapters.length > visibleChapterLimit;
-
-                return (
-                  <div className="space-y-6">
-                    {/* Chapter Count & Active Book Context Indicator */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 px-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs font-bold text-slate-600 dark:text-slate-300">
-                          Showing <span className="font-extrabold text-indigo-600 dark:text-indigo-400">{visibleChapters.length}</span> of {bookChapters.length} Chapter PDFs
-                        </p>
-                        <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60">
-                          {cleanBookTitle(activeBook.bookTitle)}{activeBook.edition && !/latest\s*ncert/i.test(activeBook.edition) ? ` (${activeBook.edition})` : ''}
-                        </span>
-                      </div>
-                      {hasMoreChapters && (
-                        <button
-                          type="button"
-                          onClick={() => setVisibleChapterLimit(bookChapters.length)}
-                          className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-                        >
-                          Show All ({bookChapters.length})
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {visibleChapters.map((chapter) => {
-                        const chapterNo = parseChapterNo(chapter.chapterNumber);
-                        const displayChapterTitle = chapter.chapterTitle || chapter.originalFileName?.replace(/\.pdf$/i, '') || chapter.fileName?.replace(/\.pdf$/i, '') || `Chapter ${chapterNo}`;
-
-                        return (
-                          <ChapterThumbnailCard
-                            key={`${activeBook.id}-${chapter.id}`}
-                            chapter={chapter}
-                            bookTitle={activeBook.bookTitle}
-                            classLevel={activeBook.classLevel}
-                            subject={activeBook.subject}
-                            publisher={activeBook.publisher || 'NCERT'}
-                            sourcePdfHash={chapter.sourcePdfHash || activeBook.pdfHash || ''}
-                            onViewPdf={(targetChapter) => {
-                              const targetHash = targetChapter.sourcePdfHash || activeBook.pdfHash || '';
-                              setPdfViewerHash(targetHash);
-                              setPdfViewerFilePath(targetChapter.filePath || activeBook.filePath);
-                              setPdfViewerTitle(`${displayChapterTitle} (${activeBook.bookTitle})`);
-                              setPdfViewerPageStart(targetChapter.pageStart || 1);
-                              setIsPdfViewerOpen(true);
-                            }}
-                            onDeleteChapter={(chId) => handleDeleteChapter(activeBook.id, chId)}
-                          />
-                        );
-                      })}
-                    </div>
-
-                    {/* Pagination / Load More Bar */}
-                    {hasMoreChapters && (
-                      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                        <button
-                          type="button"
-                          onClick={() => setVisibleChapterLimit(prev => Math.min(prev + 15, bookChapters.length))}
-                          className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer flex items-center gap-2"
-                        >
-                          <span>Load More Chapters (+15)</span>
-                          <span className="px-2 py-0.5 rounded-md bg-indigo-800 text-[10px]">
-                            {bookChapters.length - visibleChapterLimit} remaining
-                          </span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* SECTION 2: CSV QUESTION GENERATOR */}
-      {activeSubTab === 'generator' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LEFT COLUMN: MAIN CONFIGURATION PANEL */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-6">
-            <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
+      {/* CSV QUESTION GENERATOR WORKSPACE */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT COLUMN: MAIN CONFIGURATION PANEL */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 Grounded CSV Question Generator
@@ -1732,16 +1398,64 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                 Generate grounded CSV question banks exclusively from your uploaded verified PDF source.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsDirectUploadOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all border border-indigo-200/60 cursor-pointer"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span>Upload Chapter PDF</span>
+            </button>
+          </div>
 
-            {/* Global Gemini Model Selector */}
-            <div className="bg-slate-50/80 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
-              <GeminiModelSelector
-                selectedModel={selectedModel}
-                onModelChange={setSelectedModel}
-                processingMode={processingMode}
-                onProcessingModeChange={setProcessingMode}
-              />
+          {/* DYNAMIC PDF UPLOAD / CONTEXT BAR */}
+          <div className="p-4 rounded-2xl border border-dashed border-indigo-200 dark:border-indigo-800/80 bg-gradient-to-r from-indigo-50/50 via-teal-50/30 to-slate-50 dark:from-indigo-950/30 dark:via-teal-950/20 dark:to-slate-900/50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-indigo-600 text-white shadow-xs">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-slate-900 dark:text-white">
+                      {selectedBookObj ? cleanBookTitle(selectedBookObj.bookTitle) : 'No PDF Source Selected'}
+                    </span>
+                    {selectedBookObj && (
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        Active Dynamic Context
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    {selectedBookObj
+                      ? `${selectedBookObj.classLevel} • ${selectedBookObj.subject} • ${selectedBookObj.chapters?.length || 0} Chapter(s) Indexed`
+                      : 'Upload educator chapter PDF or select textbook to establish dynamic context.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsDirectUploadOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  <span>Upload Chapter PDF</span>
+                </button>
+              </div>
             </div>
+          </div>
+
+          {/* Global Gemini Model Selector */}
+          <div className="bg-slate-50/80 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
+            <GeminiModelSelector
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+              processingMode={processingMode}
+              onProcessingModeChange={setProcessingMode}
+            />
+          </div>
 
             {/* Source Selection Row: Class, Subject, Book */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1767,10 +1481,12 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                     );
 
                     const firstBook = matchingSubBooks[0] || matchingClassBooks[0] || activeBooks[0] || null;
+                    const blueprintTypes = getBlueprintQuestionTypesForSubject(nextSub, firstBook ? firstBook.bookTitle : '');
                     setGenConfig(prev => ({
                       ...prev,
                       classLevel: cLevel,
                       subject: nextSub,
+                      questionTypes: blueprintTypes,
                       bookId: firstBook ? firstBook.id : '',
                       chapterId: firstBook && firstBook.chapters?.length > 0 ? firstBook.chapters[0].id : '',
                       selectedChapterIds: firstBook && firstBook.chapters?.length > 0 ? [firstBook.chapters[0].id] : [],
@@ -1796,9 +1512,11 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                     );
 
                     const firstBook = matchingBooksForSub[0] || activeBooks.find(b => matchSubject(sub, b.subject, undefined, b.bookTitle)) || null;
+                    const blueprintTypes = getBlueprintQuestionTypesForSubject(sub, firstBook ? firstBook.bookTitle : '');
                     setGenConfig(prev => ({
                       ...prev,
                       subject: sub,
+                      questionTypes: blueprintTypes,
                       bookId: firstBook ? firstBook.id : '',
                       chapterId: firstBook && firstBook.chapters?.length > 0 ? firstBook.chapters[0].id : '',
                       selectedChapterIds: firstBook && firstBook.chapters?.length > 0 ? [firstBook.chapters[0].id] : [],
@@ -1820,11 +1538,14 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                   onChange={(e) => {
                     const bId = e.target.value;
                     const found = books.find(b => b.id === bId);
+                    const normSubject = found ? normalizeSubject(found.subject, found.bookTitle) : genConfig.subject;
+                    const blueprintTypes = getBlueprintQuestionTypesForSubject(normSubject, found ? found.bookTitle : '');
                     setGenConfig(prev => ({
                       ...prev,
                       bookId: bId,
                       classLevel: found ? found.classLevel : prev.classLevel,
-                      subject: found ? normalizeSubject(found.subject, found.bookTitle) : prev.subject,
+                      subject: normSubject,
+                      questionTypes: blueprintTypes,
                       chapterId: found && found.chapters?.length > 0 ? found.chapters[0].id : '',
                       selectedChapterIds: found && found.chapters?.length > 0 ? [found.chapters[0].id] : [],
                     }));
@@ -2027,49 +1748,13 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
               </div>
             )}
 
-            {/* Allowed Question Types */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Allowed Question Types *</label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'MCQ',
-                  'Fill in the Blanks',
-                  'True / False',
-                  'Match the Following',
-                  'One Word Answer',
-                  'One Sentence Answer',
-                  'Very Short Answer',
-                  'Short Answer',
-                  'Long Answer',
-                  'Reading Comprehension',
-                  'Grammar',
-                  'Solve the Following'
-                ].map((qType) => {
-                  const isSelected = genConfig.questionTypes.includes(qType);
-                  return (
-                    <button
-                      key={qType}
-                      type="button"
-                      onClick={() => {
-                        setGenConfig(prev => ({
-                          ...prev,
-                          questionTypes: isSelected
-                            ? prev.questionTypes.filter(t => t !== qType)
-                            : [...prev.questionTypes, qType]
-                        }));
-                      }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                        isSelected
-                          ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                      }`}
-                    >
-                      {qType}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/* Allowed Question Types (Subject-Aware Smart Auto-Select with CBSE Blueprint) */}
+            <SubjectBlueprintSelector
+              selectedSubject={genConfig.subject}
+              bookTitle={selectedBookObj?.bookTitle}
+              selectedTypes={genConfig.questionTypes}
+              onChangeTypes={(types) => setGenConfig(prev => ({ ...prev, questionTypes: types }))}
+            />
 
             {/* Configuration Row: Difficulty, Marks, Question Count */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -2118,46 +1803,6 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                   <option value={500}>500 Questions</option>
                   <option value={1000}>1000 Questions</option>
                 </select>
-              </div>
-            </div>
-
-            {/* Live Question Count Preview */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <div>
-                <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Live Question Count Preview</h4>
-                <p className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">
-                  {genConfig.scope === 'SINGLE_CHAPTER' ? 1 : (selectedBookObj?.chapters?.length || 5)} chapters × {genConfig.numberOfQuestions} questions per chapter → Up to {(genConfig.scope === 'SINGLE_CHAPTER' ? 1 : (selectedBookObj?.chapters?.length || 5)) * genConfig.numberOfQuestions} questions
-                </p>
-              </div>
-              <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-                GROUNDED ONLY
-              </span>
-            </div>
-
-            {/* Generation Summary */}
-            <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-slate-800/40 border border-indigo-100 dark:border-slate-700/80 space-y-2">
-              <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-900 dark:text-indigo-300">Generation Summary</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div>
-                  <span className="text-slate-500 block text-[10px]">Scope</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{genConfig.scope}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 block text-[10px]">Chapters</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{genConfig.scope === 'SINGLE_CHAPTER' ? 1 : (selectedBookObj?.chapters?.length || 0)}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 block text-[10px]">Distribution</span>
-                  <span className="font-bold text-slate-800 dark:text-white">Questions / Ch</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 block text-[10px]">Max Questions</span>
-                  <span className="font-bold text-indigo-600 dark:text-indigo-400">{(genConfig.scope === 'SINGLE_CHAPTER' ? 1 : (selectedBookObj?.chapters?.length || 5)) * genConfig.numberOfQuestions}</span>
-                </div>
-                <div className="col-span-2 sm:col-span-4 pt-2 border-t border-indigo-100 dark:border-slate-700">
-                  <span className="text-slate-500 block text-[10px]">Selected Question Types</span>
-                  <span className="font-medium text-slate-700 dark:text-slate-300">{genConfig.questionTypes.join(', ')}</span>
-                </div>
               </div>
             </div>
 
@@ -2258,7 +1903,6 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
             </div>
           </div>
         </div>
-      )}
 
       {/* UPLOAD NEW BOOK MODAL */}
       {isUploadModalOpen && (
@@ -2841,6 +2485,15 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
           if (savedBook.classLevel) setSelectedClass(savedBook.classLevel);
           if (savedBook.subject) setSelectedSubject(savedBook.subject);
           setSelectedBookId(savedBook.id);
+          const firstChId = savedBook.chapters && savedBook.chapters.length > 0 ? savedBook.chapters[0].id : '';
+          setGenConfig(prev => ({
+            ...prev,
+            classLevel: savedBook.classLevel || prev.classLevel,
+            subject: normalizeSubject(savedBook.subject, savedBook.bookTitle),
+            bookId: savedBook.id,
+            chapterId: firstChId,
+            selectedChapterIds: firstChId ? [firstChId] : [],
+          }));
         }}
         targetBook={targetAppendingBook}
         initialClass={selectedClass || 'Class 6'}

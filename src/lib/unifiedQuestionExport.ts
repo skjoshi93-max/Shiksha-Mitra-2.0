@@ -477,3 +477,114 @@ export function exportAssessmentQuestionsToXLSX(
 }
 
 export const exportAssessmentQuestionsToCSV = exportAssessmentQuestionsToXLSX;
+
+/**
+ * MODULE 4: Course Certification Assessment Data Bank Exporter (16-Column Master Schema)
+ * Generates an Excel (.xlsx) file matching the exact 16-column master schema:
+ * board, grade, subject, publisher, book, chapter, topic, type, difficulty, marks, text, option_a, option_b, option_c, option_d, answer
+ */
+export function exportCourseAssessmentDataBankToXLSX(
+  courseOrAssessment: any,
+  customFilename?: string
+): boolean {
+  let questions: any[] = [];
+  let courseTitle = 'Professional Certification Course';
+  let courseSubject = 'General Professional';
+  let classLevel = 'Professional & Administrative Cadres';
+  let board = 'iGOT Karmayogi Framework / Govt. of India';
+  let slug = 'course-assessment-databank';
+
+  if (!courseOrAssessment) {
+    alert('Invalid course assessment data provided for export.');
+    return false;
+  }
+
+  if (courseOrAssessment.scenarioQuestions && Array.isArray(courseOrAssessment.scenarioQuestions)) {
+    questions = courseOrAssessment.scenarioQuestions;
+    courseTitle = courseOrAssessment.title || courseTitle;
+    courseSubject = courseOrAssessment.subject || courseSubject;
+    classLevel = courseOrAssessment.classLevel || classLevel;
+    board = courseOrAssessment.board || board;
+    slug = (courseOrAssessment.title || 'course').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  } else if (courseOrAssessment.questions && Array.isArray(courseOrAssessment.questions)) {
+    questions = courseOrAssessment.questions;
+    courseTitle = courseOrAssessment.title || courseTitle;
+    courseSubject = courseOrAssessment.subject || courseSubject;
+    classLevel = courseOrAssessment.classLevel || classLevel;
+    board = courseOrAssessment.board || board;
+    slug = courseOrAssessment.slug || (courseOrAssessment.title || 'course').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  } else if (Array.isArray(courseOrAssessment)) {
+    questions = courseOrAssessment;
+  }
+
+  if (questions.length === 0) {
+    alert('No assessment questions found to export.');
+    return false;
+  }
+
+  // 16-Column Master Schema (NCERT / Data Bank Standard)
+  const schema = MASTER_SCHEMAS.ncert_pdf;
+  const headers = [...schema.headers];
+
+  const rows = questions.map((rawQ, idx) => {
+    const q = sanitizeQuestionObject(rawQ);
+    const opts = q.options || {};
+    let optA = '';
+    let optB = '';
+    let optC = '';
+    let optD = '';
+
+    if (typeof opts === 'object' && !Array.isArray(opts)) {
+      optA = opts.A || opts.a || opts.option_a || opts.optionA || '';
+      optB = opts.B || opts.b || opts.option_b || opts.optionB || '';
+      optC = opts.C || opts.c || opts.option_c || opts.optionC || '';
+      optD = opts.D || opts.d || opts.option_d || opts.optionD || '';
+    } else if (Array.isArray(opts)) {
+      optA = opts[0] || '';
+      optB = opts[1] || '';
+      optC = opts[2] || '';
+      optD = opts[3] || '';
+    }
+
+    if (!optA) optA = (q as any).option_a || (q as any).optionA || '';
+    if (!optB) optB = (q as any).option_b || (q as any).optionB || '';
+    if (!optC) optC = (q as any).option_c || (q as any).optionC || '';
+    if (!optD) optD = (q as any).option_d || (q as any).optionD || '';
+
+    // Strip leading "A)", "Option A:", etc. for pristine option text
+    optA = stripLeadingOptionLabel(optA);
+    optB = stripLeadingOptionLabel(optB);
+    optC = stripLeadingOptionLabel(optC);
+    optD = stripLeadingOptionLabel(optD);
+
+    const questionText = q.question || (q as any).text || '';
+    const answer = (q as any).answer || q.correctAnswer || 'A';
+    const topic = q.topic || (q as any).chapter || `Module ${((idx % 4) + 1)} Competency`;
+    const difficulty = q.difficulty || (idx % 3 === 0 ? 'Hard' : idx % 2 === 0 ? 'Medium' : 'Easy');
+    const marks = (q as any).marks !== undefined ? (q as any).marks : 1;
+
+    return [
+      board,
+      classLevel,
+      courseSubject,
+      'iGOT Karmayogi / ShikshaMitra Data Bank',
+      courseTitle,
+      `Module ${((idx % 4) + 1)}: ${topic}`,
+      topic,
+      'Scenario MCQ',
+      difficulty,
+      marks,
+      questionText,
+      optA,
+      optB,
+      optC,
+      optD,
+      answer,
+    ];
+  });
+
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = customFilename || `Course_Assessment_DataBank_${slug}_${timestamp}.xlsx`;
+  triggerXlsxDownload(headers, rows, filename, 'Course Assessment Data Bank');
+  return true;
+}

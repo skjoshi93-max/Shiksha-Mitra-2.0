@@ -19,6 +19,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { Assessment, AssessmentGeneratorConfig, AssessmentProgressReport, DifficultyLevel } from '../types';
+import { DEFAULT_QUESTION_TYPES } from '../lib/constants';
 import { ProcessingMode, getSavedModelSelection, getSavedProcessingMode } from '../lib/geminiModels';
 import { GeminiModelSelector } from './GeminiModelSelector';
 import { AIContentIntegrityService } from '../lib/aiContentIntegrityService';
@@ -82,6 +83,7 @@ export const AIAssessmentGeneratorModal: React.FC<AIAssessmentGeneratorModalProp
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('ALL');
   const [titleRegenIndex, setTitleRegenIndex] = useState(0);
   const [topicRegenIndex, setTopicRegenIndex] = useState(0);
+  const [isRegeneratingTopics, setIsRegeneratingTopics] = useState(false);
 
   // Direct Text Mode Toggle
   const [isDirectTextMode, setIsDirectTextMode] = useState(false);
@@ -212,9 +214,36 @@ export const AIAssessmentGeneratorModal: React.FC<AIAssessmentGeneratorModalProp
     setHasManualTitleOverride(true);
   };
 
-  const handleRefreshTopics = () => {
+  const handleRefreshTopics = async () => {
     const nextIdx = topicRegenIndex + 1;
     setTopicRegenIndex(nextIdx);
+    setIsRegeneratingTopics(true);
+    try {
+      const res = await fetch('/api/regenerate-assessment-topics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: config.subject,
+          classLevel: config.classLevel,
+          board: config.board,
+          currentTopics: config.topics,
+          model: selectedModel,
+          processingMode,
+        }),
+      });
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.topics) && data.topics.length > 0) {
+        setConfig(prev => ({ ...prev, topics: data.topics }));
+        setTopicsRawText(data.topics.join(', '));
+        setHasManualTopicsOverride(true);
+        return;
+      }
+    } catch (err) {
+      console.warn('Failed to regenerate topics via API, falling back to curriculum rotation:', err);
+    } finally {
+      setIsRegeneratingTopics(false);
+    }
+
     const refreshed = getCurriculumTopics(config.subject, config.classLevel, config.board, nextIdx);
     const commaSeparated = refreshed.join(', ');
     setConfig(prev => ({ ...prev, topics: refreshed }));
@@ -315,6 +344,7 @@ export const AIAssessmentGeneratorModal: React.FC<AIAssessmentGeneratorModalProp
                 board: config.board,
                 topics: activeTopics,
                 language: config.language,
+                questionType: config.questionType,
                 model: selectedModel,
                 processingMode,
               }),
@@ -887,10 +917,9 @@ export const AIAssessmentGeneratorModal: React.FC<AIAssessmentGeneratorModalProp
                   onChange={e => setConfig(prev => ({ ...prev, questionType: e.target.value }))}
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-xs font-bold text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
                 >
-                  <option value="Multiple Choice">Multiple Choice (MCQ)</option>
-                  <option value="Short Answer">Short Answer</option>
-                  <option value="Long Answer">Long Answer</option>
-                  <option value="MCQ + Short Answer + Long Answer">MCQ + Short Answer + Long Answer (Mixed)</option>
+                  {DEFAULT_QUESTION_TYPES.map(qt => (
+                    <option key={qt} value={qt}>{qt}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -986,10 +1015,12 @@ export const AIAssessmentGeneratorModal: React.FC<AIAssessmentGeneratorModalProp
                 <button
                   type="button"
                   onClick={handleRefreshTopics}
-                  className="flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-                  title="Refresh topics"
+                  disabled={isRegeneratingTopics}
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-600 hover:text-indigo-700 disabled:opacity-50 dark:text-indigo-400"
+                  title="Regenerate dynamic topics"
                 >
-                  <RefreshCw className="h-3 w-3" /> 🔄 Regen Topics
+                  <RefreshCw className={`h-3 w-3 ${isRegeneratingTopics ? 'animate-spin' : ''}`} />
+                  <span>{isRegeneratingTopics ? 'Regenerating...' : '🔄 Regen Topics'}</span>
                 </button>
               </div>
 

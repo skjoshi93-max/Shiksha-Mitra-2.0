@@ -226,11 +226,34 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
               </div>
 
               <div>
+                <label className="font-bold text-slate-700 dark:text-slate-300">Question Type:</label>
+                <select
+                  value={formData.questionType || DEFAULT_QUESTION_TYPES[0]}
+                  onChange={(e) => setFormData(prev => ({ ...prev, questionType: e.target.value }))}
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2 font-bold dark:border-slate-800 dark:bg-slate-800 dark:text-white"
+                >
+                  {DEFAULT_QUESTION_TYPES.map(qt => <option key={qt} value={qt}>{qt}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
                 <label className="font-bold text-slate-700 dark:text-slate-300">Time Limit (sec):</label>
                 <input
                   type="number"
                   value={formData.timeLimit}
                   onChange={(e) => setFormData(prev => ({ ...prev, timeLimit: parseInt(e.target.value) || 120 }))}
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2 font-bold dark:border-slate-800 dark:bg-slate-800 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 dark:text-slate-300">Max Score:</label>
+                <input
+                  type="number"
+                  value={formData.maxScore}
+                  onChange={(e) => setFormData(prev => ({ ...prev, maxScore: parseInt(e.target.value) || 10 }))}
                   className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 p-2 font-bold dark:border-slate-800 dark:bg-slate-800 dark:text-white"
                 />
               </div>

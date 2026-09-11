@@ -4,15 +4,14 @@ import autoTable from 'jspdf-autotable';
 import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, HeadingLevel, AlignmentType } from 'docx';
 import { Assessment, AssessmentQuestion } from '../types';
 import { getLockedExportFilename } from './exportFilenameRegistry';
+import { exportAssessmentQuestionsToCSV, exportCourseAssessmentDataBankToXLSX } from './unifiedQuestionExport';
 
 // ==========================================
-// 1. EXCEL (.xlsx) EXPORT
+// 1. EXCEL (.xlsx) EXPORT (16-Column Master Schema)
 // ==========================================
 export function exportAssessmentToXLSX(assessment: Assessment, customFilename?: string) {
-  exportAssessmentQuestionsToCSV(assessment, customFilename);
+  exportCourseAssessmentDataBankToXLSX(assessment, customFilename);
 }
-
-import { exportAssessmentQuestionsToCSV } from './unifiedQuestionExport';
 
 // ==========================================
 // 2. CSV EXPORT (UNIFIED EXPORT ENGINE)

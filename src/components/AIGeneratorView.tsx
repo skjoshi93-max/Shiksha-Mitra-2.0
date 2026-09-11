@@ -18,6 +18,8 @@ import { DEFAULT_CATEGORIES, DEFAULT_SUBJECTS, DEFAULT_QUESTION_TYPES } from '..
 import { assessQuestionQuality } from '../lib/qualityEngine';
 import { findDuplicateInBank } from '../lib/qualityEngine';
 import { AIContentIntegrityService } from '../lib/aiContentIntegrityService';
+import { SubjectBlueprintSelector } from './SubjectBlueprintSelector';
+import { getBlueprintQuestionTypesForSubject } from '../lib/subjectBlueprintMapping';
 
 interface AIGeneratorViewProps {
   initialConfig: GeneratorConfig;
@@ -518,6 +520,13 @@ export const AIGeneratorView: React.FC<AIGeneratorViewProps> = ({
                 })}
               </div>
             </div>
+
+            {/* Target Question Types Selection with CBSE Blueprint */}
+            <SubjectBlueprintSelector
+              selectedSubject={config.subjects[0] || 'General'}
+              selectedTypes={config.questionTypes}
+              onChangeTypes={(types) => setConfig(prev => ({ ...prev, questionTypes: types }))}
+            />
           </div>
 
           {/* Time & Score Settings */}

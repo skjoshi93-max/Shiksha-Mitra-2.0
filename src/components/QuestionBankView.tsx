@@ -616,9 +616,9 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setIsImportModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
+            className="btn-3d-secondary py-2 px-4 text-xs font-bold gap-2 cursor-pointer"
           >
-            <Upload className="h-4 w-4" />
+            <Upload strokeWidth={1.75} className="h-4 w-4" />
             Bulk Import
           </button>
 
@@ -632,10 +632,10 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                   exportInterviewBankToCSV(interviewQuestions);
                 }
               }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+              className={`btn-3d-primary py-2 px-4 text-xs font-bold gap-2 cursor-pointer ${
                 viewMode.interview === 'files' && selectedFileIds.length === 0
-                  ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed opacity-70'
-                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/25 cursor-pointer'
+                  ? 'opacity-60 cursor-not-allowed'
+                  : ''
               }`}
               title={
                 viewMode.interview === 'files'
@@ -645,7 +645,7 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                   : 'Export Interview Bank (XLSX)'
               }
             >
-              <Download className="h-4 w-4" />
+              <Download strokeWidth={1.75} className="h-4 w-4" />
               <span>
                 {viewMode.interview === 'files' ? 'Export Selected File (XLSX)' : 'Export Interview Bank (XLSX)'}
               </span>
@@ -662,10 +662,10 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                   exportMasterQuestionBankToCSV(ncertQuestions);
                 }
               }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+              className={`btn-3d-primary py-2 px-4 text-xs font-bold gap-2 cursor-pointer ${
                 viewMode.ncert === 'files' && selectedFileIds.length === 0
-                  ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed opacity-70'
-                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/25 cursor-pointer'
+                  ? 'opacity-60 cursor-not-allowed'
+                  : ''
               }`}
               title={
                 viewMode.ncert === 'files'
@@ -675,7 +675,7 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
                   : 'Export NCERT Bank (16-Col XLSX)'
               }
             >
-              <Download className="h-4 w-4" />
+              <Download strokeWidth={1.75} className="h-4 w-4" />
               <span>
                 {viewMode.ncert === 'files' ? 'Export Selected File (XLSX)' : 'Export NCERT Bank (XLSX)'}
               </span>
@@ -686,14 +686,14 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
           {activeBankTab === 'assessments' && (
             <button
               onClick={handleExportSelectedAssessment}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs shadow-lg transition-all ${
+              className={`btn-3d-primary py-2 px-4 text-xs font-bold gap-2 cursor-pointer ${
                 selectedAssessmentIds.length > 0
-                  ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/25 cursor-pointer'
-                  : 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed opacity-70'
+                  ? ''
+                  : 'opacity-60 cursor-not-allowed'
               }`}
               title={selectedAssessmentIds.length > 0 ? 'Export Selected Assessment Question Bank (XLSX)' : 'Select an assessment checkbox below first to export'}
             >
-              <Download className="h-4 w-4" />
+              <Download strokeWidth={1.75} className="h-4 w-4" />
               Export Selected Assessment (XLSX)
             </button>
           )}
@@ -702,80 +702,65 @@ export const QuestionBankView: React.FC<QuestionBankViewProps> = ({
 
       {/* 3 Isolated Module Tabs / Question Store Grid Tiles */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Module 1 Tile: Interview Bank (Slate-to-Indigo) */}
+        {/* Module 1 Tile: Interview Bank */}
         <button
           onClick={() => { setActiveBankTab('interview'); setSelectedFileIds([]); }}
-          style={{
-            background: 'linear-gradient(135deg, #f5f3ff, #e0e7ff)',
-            transform: activeBankTab === 'interview' ? 'scale(1.02)' : undefined,
-            transition: 'all 0.2s',
-          }}
-          className={`flex items-center justify-between p-5 rounded-3xl border border-indigo-200/80 text-left transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] ${
-            activeBankTab === 'interview' ? 'ring-2 ring-indigo-500/80' : ''
+          className={`card-3d flex items-center justify-between p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
+            activeBankTab === 'interview' ? 'ring-2 ring-slate-800 dark:ring-slate-200 shadow-md' : 'hover:-translate-y-1'
           }`}
         >
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-indigo-600 text-white shadow-xs">
-              <Sparkles className="h-5 w-5" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-xs">
+              <Sparkles strokeWidth={1.75} className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Module 1</p>
-              <h3 className="text-base font-extrabold text-[#1e293b]">Interview Bank</h3>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Module 1</p>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Interview Bank</h3>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-xl text-xs font-black bg-indigo-200/80 text-[#1e293b]">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
             {interviewQuestions.length}
           </span>
         </button>
 
-        {/* Module 2 Tile: NCERT Question Banks (Ice-Blue/Cyan) */}
+        {/* Module 2 Tile: NCERT Question Banks */}
         <button
           onClick={() => { setActiveBankTab('ncert'); setSelectedFileIds([]); }}
-          style={{
-            background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)',
-            transform: activeBankTab === 'ncert' ? 'scale(1.02)' : undefined,
-            transition: 'all 0.2s',
-          }}
-          className={`flex items-center justify-between p-5 rounded-3xl border border-teal-200/80 text-left transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] ${
-            activeBankTab === 'ncert' ? 'ring-2 ring-teal-500/80' : ''
+          className={`card-3d flex items-center justify-between p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
+            activeBankTab === 'ncert' ? 'ring-2 ring-slate-800 dark:ring-slate-200 shadow-md' : 'hover:-translate-y-1'
           }`}
         >
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-teal-600 text-white shadow-xs">
-              <BookOpen className="h-5 w-5" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-xs">
+              <BookOpen strokeWidth={1.75} className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Module 2</p>
-              <h3 className="text-base font-extrabold text-[#1e293b]">NCERT PDF Question Banks</h3>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Module 2</p>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">NCERT PDF Question Banks</h3>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-xl text-xs font-black bg-teal-200/80 text-[#1e293b]">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
             {ncertQuestions.length}
           </span>
         </button>
 
-        {/* Module 3 Tile: Skill Assessments (Emerald-to-Mint) */}
+        {/* Module 3 Tile: Skill Assessments */}
         <button
           onClick={() => { setActiveBankTab('assessments'); setSelectedAssessmentIds([]); }}
-          style={{
-            background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
-            transform: activeBankTab === 'assessments' ? 'scale(1.02)' : undefined,
-            transition: 'all 0.2s',
-          }}
-          className={`flex items-center justify-between p-5 rounded-3xl border border-emerald-200/80 text-left transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] ${
-            activeBankTab === 'assessments' ? 'ring-2 ring-emerald-500/80' : ''
+          className={`card-3d flex items-center justify-between p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
+            activeBankTab === 'assessments' ? 'ring-2 ring-slate-800 dark:ring-slate-200 shadow-md' : 'hover:-translate-y-1'
           }`}
         >
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-emerald-600 text-white shadow-xs">
-              <Award className="h-5 w-5" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-xs">
+              <Award strokeWidth={1.75} className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Module 3</p>
-              <h3 className="text-base font-extrabold text-[#1e293b]">Skill Assessments</h3>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Module 3</p>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Skill Assessments</h3>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-xl text-xs font-black bg-emerald-200/80 text-[#1e293b]">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
             {assessments.length}
           </span>
         </button>

@@ -21,6 +21,7 @@ import {
   sanitizeQuestionObject,
 } from './mathSanitizer';
 import { validateScientificContent } from './scientificIntegrityService';
+import { enforceRigidQuestionSchema } from './contentAuditorEngine';
 import { CLASS_6_POORVI_BOOK, VERIFIED_POORVI_SOLUTIONS } from './verifiedSolutionsData';
 import {
   createDefaultLifecycleCatalog,
@@ -431,6 +432,67 @@ export class TwoAgentVerificationEngine {
       status: passObjSanitizer ? 'PASS' : 'FAIL',
       severity: 'HIGH',
       evidence: `Sanitized question field: "${sanitizedQ.question}"`,
+      durationMs: 3,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Test 2.4: Phase 2 Rigid Schema Enforcement & Format Validator
+    const unformattedFillInBlank = {
+      id: 'Q-FIB-1',
+      question: 'Photosynthesis occurs in the chloroplast of green plants.',
+      type: 'Fill in the Blanks',
+      answer: 'chloroplast',
+    };
+    const schemaFib = enforceRigidQuestionSchema(unformattedFillInBlank);
+    const passFibFormat = schemaFib.valid && schemaFib.sanitized.question.includes('_____');
+
+    const unformattedTrueFalse = {
+      id: 'Q-TF-1',
+      question: 'Water boils at 100 degrees Celsius at standard atmospheric pressure.',
+      type: 'True/False',
+      answer: 'True',
+    };
+    const schemaTf = enforceRigidQuestionSchema(unformattedTrueFalse);
+    const passTfFormat = schemaTf.valid && schemaTf.sanitized.question.includes('[    ]');
+
+    tests.push({
+      testId: 'UNIT-04',
+      category: 'Unit Tests',
+      description: 'Phase 2: Rigid Schema Formatting (Fill-in-the-Blanks Underline & True/False Brackets)',
+      applicable: true,
+      executed: true,
+      status: passFibFormat && passTfFormat ? 'PASS' : 'FAIL',
+      severity: 'CRITICAL',
+      evidence: `Fill-in-the-blanks sanitized: "${schemaFib.sanitized?.question}", True/False sanitized: "${schemaTf.sanitized?.question}"`,
+      durationMs: 4,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Test 2.5: Senior Content Auditor MCQ 4-Option Enforcement & Distractor Sanitization
+    const partialMcq = {
+      id: 'Q-MCQ-1',
+      question: 'What is the acceleration due to gravity on Earth?',
+      type: 'MCQ',
+      optionA: '9.8 m/s^2',
+      optionB: '10.5 m/s^2',
+      answer: 'A',
+    };
+    const schemaMcq = enforceRigidQuestionSchema(partialMcq);
+    const passMcq4Opt = schemaMcq.valid && 
+      Boolean(schemaMcq.sanitized.options?.A) && 
+      Boolean(schemaMcq.sanitized.options?.B) && 
+      Boolean(schemaMcq.sanitized.options?.C) && 
+      Boolean(schemaMcq.sanitized.options?.D);
+
+    tests.push({
+      testId: 'UNIT-05',
+      category: 'Unit Tests',
+      description: 'Phase 2: 4-Option MCQ Complete Schema Enforcement & Distractor Integrity',
+      applicable: true,
+      executed: true,
+      status: passMcq4Opt ? 'PASS' : 'FAIL',
+      severity: 'CRITICAL',
+      evidence: `Audited options: A="${schemaMcq.sanitized?.options?.A}", B="${schemaMcq.sanitized?.options?.B}", C="${schemaMcq.sanitized?.options?.C}", D="${schemaMcq.sanitized?.options?.D}"`,
       durationMs: 3,
       timestamp: new Date().toISOString(),
     });

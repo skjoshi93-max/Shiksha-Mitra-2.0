@@ -20,7 +20,7 @@
   "featuresGrid": [
     { "id": "feat-1", "icon": "Zap", "title": "Zero-Omission Ingestion", "desc": "100% verbatim coverage of exercise problems, proofs, and solutions." },
     { "id": "feat-2", "icon": "Sparkles", "title": "AI Test Generator", "desc": "Bloom's taxonomy aligned test papers with complete marking schemes." },
-    { "id": "feat-3", "icon": "BookOpen", "title": "NCERT PDF Bank", "desc": "High-resolution first-page snapshots and clean printable PDF exports." },
+    { "id": "feat-3", "icon": "BookOpen", "title": "CSV Question Generator", "desc": "Direct chapter PDF text ingestion and locked schema CSV question bank generation." },
     { "id": "feat-4", "icon": "Terminal", "title": "Developer Settings", "desc": "Live code editor and instant file preview for metadata, sidebar, and layout." }
   ],
   "howItWorks": [
