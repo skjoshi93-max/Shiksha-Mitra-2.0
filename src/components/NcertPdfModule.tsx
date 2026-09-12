@@ -67,60 +67,54 @@ export const NcertPdfModule: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Persistent Library Navigation States (Library -> Class -> Subject -> Book Edition -> Chapters)
-  const [selectedClass, setSelectedClass] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const fromUrl = urlParams.get('class');
-        if (fromUrl) return fromUrl;
-        return localStorage.getItem(NCERT_PERSIST_CLASS_KEY) || 'Class 6';
-      } catch (_) {}
-    }
-    return 'Class 6';
-  });
+  // ZERO-STATE RESET FOR CSV GENERATOR: State declarations strictly initialized empty or null
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [bookTitle, setBookTitle] = useState<string>("");
+  const [selectedClass, setSelectedClass] = useState<string>("");
+  const [selectedSubject, setSelectedSubject] = useState<string>("");
+  const [indexedChapters, setIndexedChapters] = useState<any[]>([]);
+  const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+  const [selectedBookId, setSelectedBookId] = useState<string>("");
 
-  const [selectedSubject, setSelectedSubject] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const fromUrl = urlParams.get('subject');
-        if (fromUrl) return fromUrl;
-        return localStorage.getItem(NCERT_PERSIST_SUBJECT_KEY) || 'Mathematics';
-      } catch (_) {}
-    }
-    return 'Mathematics';
-  });
-
-  const [selectedBookId, setSelectedBookId] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const fromUrl = urlParams.get('bookId');
-        if (fromUrl) return fromUrl;
-        return localStorage.getItem(NCERT_PERSIST_BOOK_ID_KEY) || '';
-      } catch (_) {}
-    }
-    return '';
-  });
-
-  // Sync state changes with localStorage and URL search params for seamless state persistence across reloads
+  // Navbar "Clear" action button listener and global reset listener to enforce clean zero-state
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const handleClearEvent = () => {
+      setUploadedFile(null);
+      setBookTitle("");
+      setSelectedClass("");
+      setSelectedSubject("");
+      setIndexedChapters([]);
+      setSelectedChapters([]);
+      setSelectedBookId("");
+      setGenConfig({
+        classLevel: '',
+        subject: '',
+        bookId: '',
+        scope: 'FULL_BOOK',
+        chapterId: '',
+        selectedChapterIds: [],
+        questionTypes: [],
+        difficulty: 'Mixed',
+        marks: 1,
+        numberOfQuestions: 10,
+        includeTextbookQuestions: true,
+        generateNewQuestions: true,
+        language: 'English',
+      });
       try {
-        if (selectedClass) localStorage.setItem(NCERT_PERSIST_CLASS_KEY, selectedClass);
-        if (selectedSubject) localStorage.setItem(NCERT_PERSIST_SUBJECT_KEY, selectedSubject);
-        if (selectedBookId) localStorage.setItem(NCERT_PERSIST_BOOK_ID_KEY, selectedBookId);
-
-        // Safely reflect active selection in URL query params without reloading
-        const url = new URL(window.location.href);
-        if (selectedClass) url.searchParams.set('class', selectedClass);
-        if (selectedSubject) url.searchParams.set('subject', selectedSubject);
-        if (selectedBookId) url.searchParams.set('bookId', selectedBookId);
-        window.history.replaceState({}, '', url.toString());
+        localStorage.removeItem(NCERT_PERSIST_CLASS_KEY);
+        localStorage.removeItem(NCERT_PERSIST_SUBJECT_KEY);
+        localStorage.removeItem(NCERT_PERSIST_BOOK_ID_KEY);
       } catch (_) {}
-    }
-  }, [selectedClass, selectedSubject, selectedBookId]);
+    };
+
+    window.addEventListener('clear-all-data', handleClearEvent);
+    window.addEventListener('shiksha-clear-generator', handleClearEvent);
+    return () => {
+      window.removeEventListener('clear-all-data', handleClearEvent);
+      window.removeEventListener('shiksha-clear-generator', handleClearEvent);
+    };
+  }, []);
 
   // Immersive PDF Viewer Modal State (Instant Open)
   const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
@@ -274,7 +268,6 @@ export const NcertPdfModule: React.FC = () => {
   const [replaceExistingId, setReplaceExistingId] = useState<string | null>(null);
   const [classLevel, setClassLevel] = useState('Class 6');
   const [subject, setSubject] = useState('Mathematics');
-  const [bookTitle, setBookTitle] = useState('');
   const [medium, setMedium] = useState('English');
   const [board, setBoard] = useState('CBSE');
   const [publisher, setPublisher] = useState('NCERT');
@@ -330,14 +323,15 @@ export const NcertPdfModule: React.FC = () => {
     };
   }, [isUploadModalOpen]);
 
-  // Generator State
+  // Generator State - Initialized empty for strict Zero-State
   const [genConfig, setGenConfig] = useState<NcertGeneratorConfig>({
-    classLevel: 'Class 6',
-    subject: 'Mathematics',
+    classLevel: '',
+    subject: '',
     bookId: '',
     scope: 'FULL_BOOK',
     chapterId: '',
-    questionTypes: getBlueprintQuestionTypesForSubject('Mathematics'),
+    selectedChapterIds: [],
+    questionTypes: [],
     difficulty: 'Mixed',
     marks: 1,
     numberOfQuestions: 10,
@@ -524,34 +518,7 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
       const finalLoaded = repaired ? updatedBooks : (loaded || []);
 
       setBooks(finalLoaded);
-      const activeLoaded = finalLoaded.filter(b => b.status !== 'ARCHIVED');
-      if (activeLoaded.length > 0) {
-        // Match existing selected class/subject or pick from available
-        const currentSelectedClass = selectedClass || activeLoaded[0].classLevel;
-        const currentSelectedSubject = selectedSubject || activeLoaded[0].subject;
-
-        const matchingLoaded = activeLoaded.filter(
-          b => matchClass(b.classLevel, currentSelectedClass) && matchSubject(currentSelectedSubject, b.subject, undefined, b.bookTitle)
-        );
-
-        if (matchingLoaded.length > 0) {
-          if (!selectedBookId || !matchingLoaded.some(b => b.id === selectedBookId)) {
-            setSelectedBookId(matchingLoaded[0].id);
-          }
-        }
-
-        const currentSelectedExists = activeLoaded.some(b => b.id === genConfig.bookId);
-        if (!genConfig.bookId || !currentSelectedExists) {
-          const firstBook = matchingLoaded[0] || activeLoaded[0];
-          setGenConfig(prev => ({
-            ...prev,
-            bookId: firstBook.id,
-            classLevel: firstBook.classLevel,
-            subject: firstBook.subject,
-            chapterId: firstBook.chapters && firstBook.chapters.length > 0 ? firstBook.chapters[0].id : '',
-          }));
-        }
-      }
+      // Zero-State: Do not auto-select or auto-hydrate books on mount. Interface remains strictly empty until user uploads or selects.
     } catch (err: any) {
       console.error('Failed to load NCERT books:', err);
       setError(err.message || 'Failed to load NCERT library');
@@ -1340,12 +1307,23 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
     
     return bookSub === selSub || bookSub.includes(selSub);
   });
-  const effectiveFilteredBooks = filteredBooks.length > 0 ? filteredBooks : effectiveGenClassBooks;
+  const effectiveFilteredBooks = genConfig.classLevel ? filteredBooks : activeBooks;
 
-  const selectedBookObj = books.find(b => b.id === genConfig.bookId) || effectiveFilteredBooks[0] || activeBooks[0] || null;
+  // Zero-State: strictly resolve selectedBookObj from user selection or uploaded book only, never default to activeBooks[0]
+  const selectedBookObj = (genConfig.bookId ? books.find(b => b.id === genConfig.bookId) : null)
+    || (selectedBookId ? books.find(b => b.id === selectedBookId) : null)
+    || null;
+
+  // Has active book or uploaded file context
+  const hasBookOrFileContext = Boolean(
+    uploadedFile ||
+    bookTitle ||
+    selectedBookObj ||
+    (indexedChapters && indexedChapters.length > 0)
+  );
 
   return (
-    <div className="space-y-6">
+    <div id="csv-generator" className="space-y-6">
       {/* Module Header */}
       <div
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 sm:p-8 rounded-3xl border border-teal-200/80 shadow-xl shadow-teal-100/50 text-slate-900"
@@ -1371,17 +1349,6 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
             Upload chapter PDFs or select curriculum textbooks to generate verified, syllabus-aligned CSV question banks.
           </p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            id="btn-upload-chapter-pdf"
-            onClick={() => setIsDirectUploadOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
-          >
-            <Upload className="h-4 w-4" />
-            Upload Chapter PDF
-          </button>
-        </div>
       </div>
 
       {/* CSV QUESTION GENERATOR WORKSPACE */}
@@ -1398,14 +1365,6 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                 Generate grounded CSV question banks exclusively from your uploaded verified PDF source.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsDirectUploadOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all border border-indigo-200/60 cursor-pointer"
-            >
-              <Upload className="h-3.5 w-3.5" />
-              <span>Upload Chapter PDF</span>
-            </button>
           </div>
 
           {/* DYNAMIC PDF UPLOAD / CONTEXT BAR */}
@@ -1433,17 +1392,6 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                   </p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setIsDirectUploadOpen(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
-                >
-                  <Upload className="h-3.5 w-3.5" />
-                  <span>Upload Chapter PDF</span>
-                </button>
-              </div>
             </div>
           </div>
 
@@ -1461,74 +1409,40 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Class *</label>
-                <select
+                <input
+                  type="text"
+                  placeholder="e.g., Class 6"
                   value={genConfig.classLevel}
                   onChange={(e) => {
                     const cLevel = e.target.value;
-                    const matchingClassBooks = activeBooks.filter(b => matchClass(b.classLevel, cLevel));
-                    const availableSubs = Array.from(
-                      new Set<string>(
-                        matchingClassBooks.map(b => normalizeSubject(b.subject, b.bookTitle))
-                      )
-                    ).filter(Boolean).sort((a, b) => a.localeCompare(b));
-
-                    const nextSub = availableSubs.some(s => matchSubject(s, genConfig.subject))
-                      ? (availableSubs.find(s => matchSubject(s, genConfig.subject)) || genConfig.subject || 'Science')
-                      : (availableSubs[0] || 'Science');
-
-                    const matchingSubBooks = (matchingClassBooks.length > 0 ? matchingClassBooks : activeBooks).filter(b =>
-                      matchSubject(nextSub, b.subject, undefined, b.bookTitle)
-                    );
-
-                    const firstBook = matchingSubBooks[0] || matchingClassBooks[0] || activeBooks[0] || null;
-                    const blueprintTypes = getBlueprintQuestionTypesForSubject(nextSub, firstBook ? firstBook.bookTitle : '');
+                    setSelectedClass(cLevel);
                     setGenConfig(prev => ({
                       ...prev,
                       classLevel: cLevel,
-                      subject: nextSub,
-                      questionTypes: blueprintTypes,
-                      bookId: firstBook ? firstBook.id : '',
-                      chapterId: firstBook && firstBook.chapters?.length > 0 ? firstBook.chapters[0].id : '',
-                      selectedChapterIds: firstBook && firstBook.chapters?.length > 0 ? [firstBook.chapters[0].id] : [],
                     }));
                   }}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white"
-                >
-                  {availableClasses.map(cls => (
-                    <option key={cls} value={cls}>{cls}</option>
-                  ))}
-                  {availableClasses.length === 0 && <option value="Class 6">Class 6</option>}
-                </select>
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                />
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Subject *</label>
-                <select
+                <input
+                  type="text"
+                  placeholder="e.g., Mathematics"
                   value={genConfig.subject}
                   onChange={(e) => {
                     const sub = e.target.value;
-                    const matchingBooksForSub = activeBooks.filter(b =>
-                      matchClass(b.classLevel, genConfig.classLevel) && matchSubject(sub, b.subject, undefined, b.bookTitle)
-                    );
-
-                    const firstBook = matchingBooksForSub[0] || activeBooks.find(b => matchSubject(sub, b.subject, undefined, b.bookTitle)) || null;
-                    const blueprintTypes = getBlueprintQuestionTypesForSubject(sub, firstBook ? firstBook.bookTitle : '');
+                    setSelectedSubject(sub);
+                    const blueprintTypes = getBlueprintQuestionTypesForSubject(sub);
                     setGenConfig(prev => ({
                       ...prev,
                       subject: sub,
-                      questionTypes: blueprintTypes,
-                      bookId: firstBook ? firstBook.id : '',
-                      chapterId: firstBook && firstBook.chapters?.length > 0 ? firstBook.chapters[0].id : '',
-                      selectedChapterIds: firstBook && firstBook.chapters?.length > 0 ? [firstBook.chapters[0].id] : [],
+                      questionTypes: blueprintTypes.length > 0 ? blueprintTypes : prev.questionTypes,
                     }));
                   }}
-                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white"
-                >
-                  {genAvailableSubjects.map(sub => (
-                    <option key={sub} value={sub}>{sub}</option>
-                  ))}
-                  {genAvailableSubjects.length === 0 && <option value="Mathematics">Mathematics</option>}
-                </select>
+                  className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                />
               </div>
 
               <div className="space-y-2">
@@ -1537,9 +1451,31 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                   value={genConfig.bookId}
                   onChange={(e) => {
                     const bId = e.target.value;
+                    if (!bId) {
+                      setSelectedBookId('');
+                      setBookTitle('');
+                      setIndexedChapters([]);
+                      setSelectedChapters([]);
+                      setGenConfig(prev => ({
+                        ...prev,
+                        bookId: '',
+                        chapterId: '',
+                        selectedChapterIds: [],
+                      }));
+                      return;
+                    }
                     const found = books.find(b => b.id === bId);
                     const normSubject = found ? normalizeSubject(found.subject, found.bookTitle) : genConfig.subject;
                     const blueprintTypes = getBlueprintQuestionTypesForSubject(normSubject, found ? found.bookTitle : '');
+                    setSelectedBookId(bId);
+                    if (found) {
+                      setSelectedClass(found.classLevel);
+                      setSelectedSubject(normSubject);
+                      setBookTitle(found.bookTitle || '');
+                      setIndexedChapters(found.chapters || []);
+                      const firstChId = found.chapters && found.chapters.length > 0 ? found.chapters[0].id : '';
+                      setSelectedChapters(firstChId ? [firstChId] : []);
+                    }
                     setGenConfig(prev => ({
                       ...prev,
                       bookId: bId,
@@ -1552,8 +1488,9 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
                   }}
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white"
                 >
+                  <option value="">-- Select Book --</option>
                   {effectiveFilteredBooks.length === 0 ? (
-                    <option value="">No books available for selection</option>
+                    <option value="" disabled>No books available for selection</option>
                   ) : (
                     effectiveFilteredBooks.map(b => (
                       <option key={b.id} value={b.id}>
@@ -1565,187 +1502,242 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
               </div>
             </div>
 
-            {/* Generation Scope & Distribution */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Generation Scope *</label>
-                <div className="grid grid-cols-3 gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
-                  {(['FULL_BOOK', 'FULL_CHAPTER', 'SINGLE_CHAPTER'] as const).map((sc) => (
-                    <button
-                      key={sc}
-                      type="button"
-                      onClick={() => setGenConfig(prev => ({ ...prev, scope: sc }))}
-                      className={`py-2 rounded-xl text-[10px] font-extrabold transition-all ${
-                        genConfig.scope === sc
-                          ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                      }`}
-                    >
-                      {sc === 'FULL_BOOK' ? 'Full Book' : sc === 'FULL_CHAPTER' ? 'Full Chapter' : 'Single Chapter'}
-                    </button>
-                  ))}
+            {/* CONDITIONAL TARGET CHAPTERS GRID OR ZERO-STATE CLEAN UPLOAD CONTAINER */}
+            {!hasBookOrFileContext ? (
+              <div
+                id="zero-state-upload-zone"
+                className="p-8 sm:p-10 rounded-3xl border-2 border-dashed border-indigo-200 dark:border-indigo-800/70 bg-gradient-to-b from-indigo-50/40 via-teal-50/20 to-white dark:from-indigo-950/20 dark:via-slate-900 dark:to-slate-900 text-center space-y-4 shadow-xs"
+              >
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs">
+                  <Upload className="h-8 w-8" />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Question Distribution</label>
-                <div className="px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-white">
-                  <span>Questions Per Chapter</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[10px]">AUTOMATIC</span>
+                <div className="max-w-md mx-auto space-y-1.5">
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    Upload Chapter PDF
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Upload an educator chapter PDF or select a textbook above to extract chapters, establish dynamic source context, and generate grounded CSV question banks.
+                  </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Chapter Selector Grid (Zero HTML Select Dropdowns) */}
-            {genConfig.scope === 'FULL_BOOK' ? (
-              <div className="p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                  <div>
-                    <h4 className="text-xs font-black text-indigo-900 dark:text-indigo-200">Full Book Scope Active</h4>
-                    <p className="text-[11px] font-medium text-indigo-700 dark:text-indigo-300">
-                      Questions will be generated automatically across all {selectedBookObj?.chapters?.length || 0} chapters in "{selectedBookObj?.bookTitle || 'selected book'}".
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : genConfig.scope === 'FULL_CHAPTER' ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Select Target Chapters (Multi-Select Ticks) *
-                    </label>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Click chapter tiles below to check/uncheck chapters for batch question generation.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const allIds = selectedBookObj?.chapters?.map(c => c.id) || [];
-                        setGenConfig(prev => ({ ...prev, selectedChapterIds: allIds, chapterId: allIds[0] || '' }));
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    id="btn-zero-state-upload"
+                    onClick={() => setIsDirectUploadOpen(true)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/25 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span>Upload Chapter PDF</span>
+                  </button>
+                  <label
+                    htmlFor="direct-file-input-zero-state"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-slate-700 shadow-xs transition-all cursor-pointer"
+                  >
+                    <FileText className="h-4 w-4 text-indigo-500" />
+                    <span>Browse Files</span>
+                    <input
+                      type="file"
+                      id="direct-file-input-zero-state"
+                      accept=".pdf"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          const file = e.target.files[0];
+                          setUploadedFile(file);
+                          const cleanTitle = file.name.replace(/\.[^/.]+$/, '');
+                          setBookTitle(cleanTitle);
+                          setIsDirectUploadOpen(true);
+                        }
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[11px] font-extrabold cursor-pointer transition-all border border-indigo-200 dark:border-indigo-800"
-                    >
-                      Select All ({selectedBookObj?.chapters?.length || 0})
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setGenConfig(prev => ({ ...prev, selectedChapterIds: [] }));
-                      }}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer transition-all"
-                    >
-                      Clear Selection
-                    </button>
-                  </div>
+                    />
+                  </label>
                 </div>
-
-                {selectedBookObj?.chapters && selectedBookObj.chapters.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-72 overflow-y-auto p-1">
-                    {selectedBookObj.chapters.map(ch => {
-                      const selectedList = genConfig.selectedChapterIds || (genConfig.chapterId ? [genConfig.chapterId] : []);
-                      const isChecked = selectedList.includes(ch.id);
-                      return (
-                        <button
-                          key={ch.id}
-                          type="button"
-                          onClick={() => {
-                            const updated = isChecked
-                              ? selectedList.filter(id => id !== ch.id)
-                              : [...selectedList, ch.id];
-                            setGenConfig(prev => ({
-                              ...prev,
-                              selectedChapterIds: updated,
-                              chapterId: updated[0] || '',
-                            }));
-                          }}
-                          className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2.5 cursor-pointer ${
-                            isChecked
-                              ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20 ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900'
-                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-indigo-300 dark:hover:border-indigo-700'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <span className={`px-2.5 py-1 rounded-lg text-xs font-black tracking-wide ${
-                              isChecked
-                                ? 'bg-white/20 text-white'
-                                : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
-                            }`}>
-                              Chapter {ch.chapterNumber}
-                            </span>
-                            <div className={`h-5 w-5 rounded-md flex items-center justify-center border transition-all ${
-                              isChecked ? 'bg-white text-indigo-600 border-white' : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'
-                            }`}>
-                              {isChecked && <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100" style={{ color: isChecked ? '#ffffff' : '#1e293b' }}>
-                            <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
-                            <span className="truncate">{(ch as any).title || (ch as any).chapterName || (ch as any).name || (ch as any).chapter_title || ch.chapterTitle || "Unnamed Chapter"}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="p-4 text-center text-xs font-bold text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
-                    No chapters available for this textbook.
-                  </div>
-                )}
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    Select Single Chapter *
-                  </label>
-                  <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                    {selectedBookObj?.chapters?.length || 0} Chapter(s) Available
-                  </span>
-                </div>
-
-                {selectedBookObj?.chapters && selectedBookObj.chapters.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-72 overflow-y-auto p-1">
-                    {selectedBookObj.chapters.map(ch => {
-                      const isSelected = genConfig.chapterId === ch.id;
-                      return (
+              <>
+                {/* Generation Scope & Distribution */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Generation Scope *</label>
+                    <div className="grid grid-cols-3 gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
+                      {(['FULL_BOOK', 'FULL_CHAPTER', 'SINGLE_CHAPTER'] as const).map((sc) => (
                         <button
-                          key={ch.id}
+                          key={sc}
                           type="button"
-                          onClick={() => setGenConfig(prev => ({ ...prev, chapterId: ch.id, selectedChapterIds: [ch.id] }))}
-                          className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2.5 cursor-pointer ${
-                            isSelected
-                              ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20 ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900'
-                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-indigo-300 dark:hover:border-indigo-700'
+                          onClick={() => setGenConfig(prev => ({ ...prev, scope: sc }))}
+                          className={`py-2 rounded-xl text-[10px] font-extrabold transition-all ${
+                            genConfig.scope === sc
+                              ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                           }`}
                         >
-                          <div className="flex items-center justify-between w-full">
-                            <span className={`px-2.5 py-1 rounded-lg text-xs font-black tracking-wide ${
-                              isSelected
-                                ? 'bg-white/20 text-white'
-                                : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
-                            }`}>
-                              Chapter {ch.chapterNumber}
-                            </span>
-                            {isSelected && <Check className="h-4 w-4 text-white" />}
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100" style={{ color: isSelected ? '#ffffff' : '#1e293b' }}>
-                            <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
-                            <span className="truncate">{(ch as any).title || (ch as any).chapterName || (ch as any).name || (ch as any).chapter_title || ch.chapterTitle || "Unnamed Chapter"}</span>
-                          </div>
+                          {sc === 'FULL_BOOK' ? 'Full Book' : sc === 'FULL_CHAPTER' ? 'Full Chapter' : 'Single Chapter'}
                         </button>
-                      );
-                    })}
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Question Distribution</label>
+                    <div className="px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-white">
+                      <span>Questions Per Chapter</span>
+                      <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[10px]">AUTOMATIC</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Chapter Selector Grid (Zero HTML Select Dropdowns) */}
+                {genConfig.scope === 'FULL_BOOK' ? (
+                  <div className="p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <BookOpen className="h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                      <div>
+                        <h4 className="text-xs font-black text-indigo-900 dark:text-indigo-200">Full Book Scope Active</h4>
+                        <p className="text-[11px] font-medium text-indigo-700 dark:text-indigo-300">
+                          Questions will be generated automatically across all {selectedBookObj?.chapters?.length || 0} chapters in "{selectedBookObj?.bookTitle || 'selected book'}".
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : genConfig.scope === 'FULL_CHAPTER' ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                          Select Target Chapters (Multi-Select Ticks) *
+                        </label>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Click chapter tiles below to check/uncheck chapters for batch question generation.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const allIds = selectedBookObj?.chapters?.map(c => c.id) || [];
+                            setGenConfig(prev => ({ ...prev, selectedChapterIds: allIds, chapterId: allIds[0] || '' }));
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[11px] font-extrabold cursor-pointer transition-all border border-indigo-200 dark:border-indigo-800"
+                        >
+                          Select All ({selectedBookObj?.chapters?.length || 0})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setGenConfig(prev => ({ ...prev, selectedChapterIds: [] }));
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-bold cursor-pointer transition-all"
+                        >
+                          Clear Selection
+                        </button>
+                      </div>
+                    </div>
+
+                    {selectedBookObj?.chapters && selectedBookObj.chapters.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-72 overflow-y-auto p-1">
+                        {selectedBookObj.chapters.map(ch => {
+                          const selectedList = genConfig.selectedChapterIds || (genConfig.chapterId ? [genConfig.chapterId] : []);
+                          const isChecked = selectedList.includes(ch.id);
+                          return (
+                            <button
+                              key={ch.id}
+                              type="button"
+                              onClick={() => {
+                                const updated = isChecked
+                                  ? selectedList.filter(id => id !== ch.id)
+                                  : [...selectedList, ch.id];
+                                setGenConfig(prev => ({
+                                  ...prev,
+                                  selectedChapterIds: updated,
+                                  chapterId: updated[0] || '',
+                                }));
+                              }}
+                              className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2.5 cursor-pointer ${
+                                isChecked
+                                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20 ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900'
+                                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-indigo-300 dark:hover:border-indigo-700'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <span className={`px-2.5 py-1 rounded-lg text-xs font-black tracking-wide ${
+                                  isChecked
+                                    ? 'bg-white/20 text-white'
+                                    : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+                                }`}>
+                                  Chapter {ch.chapterNumber}
+                                </span>
+                                <div className={`h-5 w-5 rounded-md flex items-center justify-center border transition-all ${
+                                  isChecked ? 'bg-white text-indigo-600 border-white' : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'
+                                }`}>
+                                  {isChecked && <Check className="h-3.5 w-3.5 stroke-[3]" />}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100" style={{ color: isChecked ? '#ffffff' : '#1e293b' }}>
+                                <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+                                <span className="truncate">{(ch as any).title || (ch as any).chapterName || (ch as any).name || (ch as any).chapter_title || ch.chapterTitle || "Unnamed Chapter"}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-xs font-bold text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        No chapters available for this textbook.
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="p-4 text-center text-xs font-bold text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
-                    No chapters available for this textbook.
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                        Select Single Chapter *
+                      </label>
+                      <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                        {selectedBookObj?.chapters?.length || 0} Chapter(s) Available
+                      </span>
+                    </div>
+
+                    {selectedBookObj?.chapters && selectedBookObj.chapters.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-72 overflow-y-auto p-1">
+                        {selectedBookObj.chapters.map(ch => {
+                          const isSelected = genConfig.chapterId === ch.id;
+                          return (
+                            <button
+                              key={ch.id}
+                              type="button"
+                              onClick={() => setGenConfig(prev => ({ ...prev, chapterId: ch.id, selectedChapterIds: [ch.id] }))}
+                              className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2.5 cursor-pointer ${
+                                isSelected
+                                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20 ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900'
+                                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-indigo-300 dark:hover:border-indigo-700'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <span className={`px-2.5 py-1 rounded-lg text-xs font-black tracking-wide ${
+                                  isSelected
+                                    ? 'bg-white/20 text-white'
+                                    : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+                                }`}>
+                                  Chapter {ch.chapterNumber}
+                                </span>
+                                {isSelected && <Check className="h-4 w-4 text-white" />}
+                              </div>
+                              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 dark:text-slate-100" style={{ color: isSelected ? '#ffffff' : '#1e293b' }}>
+                                <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+                                <span className="truncate">{(ch as any).title || (ch as any).chapterName || (ch as any).name || (ch as any).chapter_title || ch.chapterTitle || "Unnamed Chapter"}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-xs font-bold text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        No chapters available for this textbook.
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </>
             )}
 
             {/* Allowed Question Types (Subject-Aware Smart Auto-Select with CBSE Blueprint) */}
@@ -1810,8 +1802,8 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
             <div className="pt-2">
               <button
                 onClick={handleGenerateQuestions}
-                disabled={generating || activeBooks.length === 0}
-                className="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-extrabold text-sm shadow-xl shadow-indigo-600/30 transition-all"
+                disabled={generating || !hasBookOrFileContext}
+                className="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-extrabold text-sm shadow-xl shadow-indigo-600/30 transition-all cursor-pointer disabled:cursor-not-allowed"
               >
                 {generating ? (
                   <>
@@ -1830,66 +1822,68 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
 
           {/* RIGHT COLUMN: SELECTED SOURCE TRUTH & EXCEL COMPATIBILITY */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Selected Source Truth */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <ShieldCheck className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Selected Source Truth</h3>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Book Title</span>
-                  <span className="font-extrabold text-slate-900 dark:text-white text-sm">
-                    {selectedBookObj ? selectedBookObj.bookTitle : 'No book selected'}
-                  </span>
+            {/* Selected Source Truth - STRICTLY HIDDEN when no book/file context exists */}
+            {hasBookOrFileContext && (
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <ShieldCheck className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                  <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Selected Source Truth</h3>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-3 text-xs">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Class</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {selectedBookObj ? selectedBookObj.classLevel : genConfig.classLevel}
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Book Title</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white text-sm">
+                      {selectedBookObj ? selectedBookObj.bookTitle : bookTitle || 'No book selected'}
                     </span>
                   </div>
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Subject</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {selectedBookObj ? selectedBookObj.subject : genConfig.subject}
-                    </span>
-                  </div>
-                </div>
 
-                {selectedBookObj?.chapters?.find(c => c.id === genConfig.chapterId) && (
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Selected Chapter & Topic Details</span>
-                    <p className="font-extrabold text-slate-900 dark:text-white text-xs">
-                      Chapter {selectedBookObj.chapters.find(c => c.id === genConfig.chapterId)?.chapterNumber}
-                    </p>
-                    <div className="space-y-1 max-h-40 overflow-y-auto pr-1 pt-1">
-                      {selectedBookObj.chapters.find(c => c.id === genConfig.chapterId)?.topics?.map((t, idx) => (
-                        <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
-                          <span className="text-indigo-500 font-bold">•</span>
-                          <span className="leading-tight">{t}</span>
-                        </div>
-                      ))}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Class</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {selectedBookObj ? selectedBookObj.classLevel : genConfig.classLevel || 'N/A'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Subject</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {selectedBookObj ? selectedBookObj.subject : genConfig.subject || 'N/A'}
+                      </span>
                     </div>
                   </div>
-                )}
 
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Source Verification</span>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-[11px] font-mono text-slate-500">
-                      {selectedBookObj ? `${selectedBookObj.pdfHash.slice(0, 16)}...` : 'N/A'}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1">
-                      <Check className="h-3 w-3" /> Verified
-                    </span>
+                  {selectedBookObj?.chapters?.find(c => c.id === genConfig.chapterId) && (
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Selected Chapter & Topic Details</span>
+                      <p className="font-extrabold text-slate-900 dark:text-white text-xs">
+                        Chapter {selectedBookObj.chapters.find(c => c.id === genConfig.chapterId)?.chapterNumber}
+                      </p>
+                      <div className="space-y-1 max-h-40 overflow-y-auto pr-1 pt-1">
+                        {selectedBookObj.chapters.find(c => c.id === genConfig.chapterId)?.topics?.map((t, idx) => (
+                          <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
+                            <span className="text-indigo-500 font-bold">•</span>
+                            <span className="leading-tight">{t}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Source Verification</span>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[11px] font-mono text-slate-500">
+                        {selectedBookObj ? `${(selectedBookObj.pdfHash || '').slice(0, 16)}...` : 'Uploaded'}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1">
+                        <Check className="h-3 w-3" /> Verified
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Microsoft Excel UTF-8 BOM Compatibility */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-3">
@@ -2485,7 +2479,10 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
           if (savedBook.classLevel) setSelectedClass(savedBook.classLevel);
           if (savedBook.subject) setSelectedSubject(savedBook.subject);
           setSelectedBookId(savedBook.id);
+          setBookTitle(savedBook.bookTitle || '');
+          setIndexedChapters(savedBook.chapters || []);
           const firstChId = savedBook.chapters && savedBook.chapters.length > 0 ? savedBook.chapters[0].id : '';
+          setSelectedChapters(firstChId ? [firstChId] : []);
           setGenConfig(prev => ({
             ...prev,
             classLevel: savedBook.classLevel || prev.classLevel,
@@ -2493,6 +2490,7 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
             bookId: savedBook.id,
             chapterId: firstChId,
             selectedChapterIds: firstChId ? [firstChId] : [],
+            questionTypes: getBlueprintQuestionTypesForSubject(savedBook.subject, savedBook.bookTitle),
           }));
         }}
         targetBook={targetAppendingBook}
@@ -2526,3 +2524,5 @@ const GANITA_PRAKASH_CHAPTERS: Array<{
     </div>
   );
 };
+
+export default NcertPdfModule;

@@ -153,11 +153,18 @@ export default function App() {
   };
 
   const handleClearAllData = async () => {
-    if (window.confirm('Are you sure you want to clear all questions?')) {
+    if (window.confirm('Are you sure you want to clear all data and reset to zero-state?')) {
       setSaveStatus('saving');
       await clearAllQuestions();
       setQuestions([]);
       setSaveStatus('saved');
+      try {
+        localStorage.removeItem('shiksha_ncert_persist_class');
+        localStorage.removeItem('shiksha_ncert_persist_subject');
+        localStorage.removeItem('shiksha_ncert_persist_book_id');
+      } catch (_) {}
+      window.dispatchEvent(new CustomEvent('clear-all-data'));
+      window.dispatchEvent(new CustomEvent('shiksha-clear-generator'));
     }
   };
 
